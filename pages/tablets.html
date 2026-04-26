@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Real Tablets — Linear B</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-logo">Linear B<span>Mycenaean Greek Script</span></div>
+  <ul class="nav-links">
+    <li><a href="../index.html">Home</a></li>
+    <li><a href="syllabary.html">Syllabary</a></li>
+    <li><a href="transliterator.html">Transliterator</a></li>
+    <li><a href="tablets.html" class="active">Tablets</a></li>
+    <li><a href="grammar.html">Grammar</a></li>
+    <li><a href="vocabulary.html">Vocabulary</a></li>
+    <li><a href="numbers.html">Numbers</a></li>
+    <li><a href="quiz.html">Quiz</a></li>
+    <li><a href="decode.html">Decode</a></li>
+  </ul>
+</nav>
+<main class="page">
+  <div class="page-hero">
+    <div class="section-title">Primary Sources</div>
+    <h1>Real Tablets</h1>
+    <p class="subtitle">Transcriptions and translations of three key tablets from Pylos, verified against published corpora</p>
+  </div>
+  <div class="tablet-sel" id="tablet-sel">
+    <button class="tablet-btn active" onclick="showTablet('ta641',this)">PY Ta 641 — Tripod Tablet</button>
+    <button class="tablet-btn" onclick="showTablet('cn608',this)">PY Cn 608 — Pig Tablet</button>
+    <button class="tablet-btn" onclick="showTablet('fn7',this)">PY Fn 7 — Oil Rations</button>
+  </div>
+  <div class="tablet-panel" id="tablet-panel"></div>
+  <div class="panel mt3">
+    <h3>How to read a Linear B tablet</h3>
+    <p>Each line typically contains: a <strong>label or heading word</strong> (often a title or place name), followed by a <strong>commodity ideogram</strong> (a pictographic sign), followed by a <strong>number</strong>. The ideogram tells you what is being counted even if you can't read the words. Word dividers (short vertical strokes, transcribed as commas) separate entries.</p>
+  </div>
+</main>
+<footer><span class="signs">𐀷𐀙𐀏 𐀯𐀵 𐀏𐀏 𐀴𐀪𐀡</span>Linear B Mycenaean Script Reference</footer>
+<script src="../js/data.js"></script>
+<script>
+function showTablet(id, btn) {
+  document.querySelectorAll('.tablet-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const T = TABLETS[id];
+  const lines = T.lines.map(l => `
+    <div class="tablet-line">
+      <span class="t-num">${l.n}</span>
+      <div>
+        <div class="t-signs">${l.signs}</div>
+        <div class="t-translit">${l.translit}${l.ideogram ? `<span class="t-ideogram">${l.ideogram}</span>` : ''}</div>
+      </div>
+      <div class="t-meaning">${l.meaning}</div>
+    </div>`).join('');
+  document.getElementById('tablet-panel').innerHTML = `
+    <div class="tablet-meta">${T.date}</div>
+    <div class="tablet-title">${T.ref} — ${T.name}</div>
+    <div class="tablet-desc">${T.desc}</div>
+    <div style="display:grid;grid-template-columns:36px 1fr 1fr;gap:0 16px;padding-bottom:6px;border-bottom:1px solid var(--stone-700);margin-bottom:4px">
+      <span style="font-size:.6rem;color:var(--ink-faint);font-family:var(--font-mono)">line</span>
+      <span style="font-size:.6rem;color:var(--ink-faint);font-family:var(--font-mono)">signs + transliteration</span>
+      <span style="font-size:.6rem;color:var(--ink-faint);font-family:var(--font-mono)">meaning</span>
+    </div>
+    ${lines}`;
+}
+showTablet('ta641', document.querySelector('.tablet-btn'));
+</script>
+</body>
+</html>

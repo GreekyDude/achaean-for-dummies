@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grammar — Linear B</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-logo">Linear B<span>Mycenaean Greek Script</span></div>
+  <ul class="nav-links">
+    <li><a href="../index.html">Home</a></li>
+    <li><a href="syllabary.html">Syllabary</a></li>
+    <li><a href="transliterator.html">Transliterator</a></li>
+    <li><a href="tablets.html">Tablets</a></li>
+    <li><a href="grammar.html" class="active">Grammar</a></li>
+    <li><a href="vocabulary.html">Vocabulary</a></li>
+    <li><a href="numbers.html">Numbers</a></li>
+    <li><a href="quiz.html">Quiz</a></li>
+    <li><a href="decode.html">Decode</a></li>
+  </ul>
+</nav>
+<main class="page">
+  <div class="page-hero">
+    <div class="section-title">Reference</div>
+    <h1>Grammar</h1>
+    <p class="subtitle">Cases, declensions, verbs, and formulaic particles — the structures behind the tablets</p>
+  </div>
+
+  <div class="gram-tabs">
+    <button class="gram-tab active" onclick="showGram('cases',this)">Cases</button>
+    <button class="gram-tab" onclick="showGram('declensions',this)">Declensions</button>
+    <button class="gram-tab" onclick="showGram('verbs',this)">Verbs</button>
+    <button class="gram-tab" onclick="showGram('particles',this)">Particles &amp; Formulae</button>
+    <button class="gram-tab" onclick="showGram('scribal',this)">Scribal Rules</button>
+  </div>
+
+  <!-- CASES -->
+  <div id="gram-cases" class="gram-sec">
+    <div class="panel">
+      <p>Mycenaean Greek had <strong>5 cases</strong> visible in the tablets — nominative, accusative, genitive, dative-locative, and instrumental. Because Linear B drops final consonants, cases are often hard to distinguish visually; context and ideograms do the work. All examples below are from the <strong>wanax</strong> paradigm, one of the best-attested noun paradigms in the corpus.</p>
+    </div>
+    <table>
+      <tr><th>Case</th><th>Function</th><th>Linear B</th><th>Signs</th><th>Reconstructed</th></tr>
+      <tr>
+        <td><strong>Nominative</strong><br><small style="color:var(--ink-faint)">subject</small></td>
+        <td>Subject; label in records</td>
+        <td><code>wa-na-ka</code></td>
+        <td><span class="sign-md">𐀷𐀙𐀏</span></td>
+        <td>wanaks <span class="attested">★</span></td>
+      </tr>
+      <tr>
+        <td><strong>Genitive</strong><br><small style="color:var(--ink-faint)">of</small></td>
+        <td>Possession, origin</td>
+        <td><code>wa-na-ka-to</code></td>
+        <td><span class="sign-md">𐀷𐀙𐀏𐀵</span></td>
+        <td>wanaktos <span class="attested">★</span></td>
+      </tr>
+      <tr>
+        <td><strong>Dative-Loc.</strong><br><small style="color:var(--ink-faint)">to/for/at</small></td>
+        <td>Recipient; location</td>
+        <td><code>wa-na-ka-te</code></td>
+        <td><span class="sign-md">𐀷𐀙𐀏𐀳</span></td>
+        <td>wanaktei <span class="attested">★</span></td>
+      </tr>
+      <tr>
+        <td><strong>Accusative</strong><br><small style="color:var(--ink-faint)">object</small></td>
+        <td>Direct object</td>
+        <td><code>wa-na-ka-ta</code></td>
+        <td><span class="sign-md">𐀷𐀙𐀏𐀲</span></td>
+        <td>wanakta <small style="color:var(--ink-faint)">reconstructed</small></td>
+      </tr>
+      <tr>
+        <td><strong>Instrumental</strong><br><small style="color:var(--ink-faint)">with/by</small></td>
+        <td>Means; accompaniment; dative pl. in -pi</td>
+        <td><code>po-pi</code></td>
+        <td><span class="sign-md">𐀡𐀡</span></td>
+        <td>pophi ("with feet") <span class="attested">★</span></td>
+      </tr>
+    </table>
+    <div class="panel">
+      <p>Source: Chadwick &amp; Ventris, <em>Documents in Mycenaean Greek</em> (2nd ed., 1973); Tentative Grammar of Mycenaean Greek §19. The instrumental and locative had merged, and both would disappear entirely from later Greek dialects.</p>
+    </div>
+  </div>
+
+  <!-- DECLENSIONS -->
+  <div id="gram-declensions" class="gram-sec" style="display:none">
+    <div class="gram-tabs" style="margin-bottom:1rem">
+      <button class="gram-tab active" onclick="showDecl('wanax',this)">wanax (3rd decl.)</button>
+      <button class="gram-tab" onclick="showDecl('doero',this)">do-e-ro (2nd decl.)</button>
+      <button class="gram-tab" onclick="showDecl('sito',this)">si-to (2nd neut.)</button>
+    </div>
+    <div id="decl-content"></div>
+    <div class="panel">
+      <p><span class="attested">★</span> = directly attested on tablets. All others reconstructed from spelling rules and comparative Greek linguistics. Source: Ventris &amp; Chadwick, <em>Documents in Mycenaean Greek</em>; Tentative Grammar §19–23.</p>
+    </div>
+  </div>
+
+  <!-- VERBS -->
+  <div id="gram-verbs" class="gram-sec" style="display:none">
+    <div class="panel">
+      <p>The verbal system in Linear B is poorly represented — the tablets are administrative records, not literature. Verbs appear mainly as <strong>infinitives, participles, and 3rd-person forms</strong>. The past-tense augment (the <em>e-</em> prefix marking past tense in classical Greek) is <strong>almost entirely absent</strong>. There is only one clearly augmented form in the entire corpus: <code>a-pe-do-ke</code>.</p>
+    </div>
+    <table>
+      <tr><th>Linear B</th><th>Signs</th><th>Reconstructed</th><th>Meaning</th><th></th></tr>
+      <tr>
+        <td><code>e-ko</code></td>
+        <td><span class="sign-md">𐀁𐀏</span></td>
+        <td>ekhō / ekhei</td>
+        <td>to have / he has</td>
+        <td><span class="attested">★</span></td>
+      </tr>
+      <tr>
+        <td><code>do-ke</code></td>
+        <td><span class="sign-md">𐀈𐀐</span></td>
+        <td>dōke</td>
+        <td>he gave (past, no augment)</td>
+        <td><span class="attested">★</span></td>
+      </tr>
+      <tr>
+        <td><code>a-pe-do-ke</code></td>
+        <td><span class="sign-md">𐀀𐀟𐀈𐀐</span></td>
+        <td>apedōke</td>
+        <td>delivered, gave back</td>
+        <td><span class="attested">★ only augmented form</span></td>
+      </tr>
+      <tr>
+        <td><code>we-ke</code></td>
+        <td><span class="sign-md">𐀸𐀐</span></td>
+        <td>wergei</td>
+        <td>works on, makes</td>
+        <td><span class="attested">★</span></td>
+      </tr>
+      <tr>
+        <td><code>jo-a-se-so-si</code></td>
+        <td><span class="sign-md">𐀍𐀀𐀮𐀰𐀯</span></td>
+        <td>hō asēsonsi</td>
+        <td>thus will they fatten (future 3pl.)</td>
+        <td><span class="attested">★ PY Cn 608</span></td>
+      </tr>
+      <tr>
+        <td><code>e-re-u-te-ro</code></td>
+        <td><span class="sign-md">𐀁𐀩𐀄𐀳𐀫</span></td>
+        <td>eleutheros</td>
+        <td>free (person) — adj. used as status label</td>
+        <td><span class="attested">★</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- PARTICLES -->
+  <div id="gram-particles" class="gram-sec" style="display:none">
+    <div class="panel">
+      <p>Certain short words and formulaic phrases recur across hundreds of tablets. Recognising them lets you parse an unfamiliar tablet quickly — even before you can read the content words.</p>
+    </div>
+    <table>
+      <tr><th>Signs</th><th>Linear B</th><th>Meaning / Function</th></tr>
+      <tr><td><span class="sign-md">𐀵𐀰</span></td><td><code>to-so</code></td><td>"so much / so many" (tosos) — introduces a total. The most common tally word.</td></tr>
+      <tr><td><span class="sign-md">𐀵𐀰𐀆</span></td><td><code>to-so-de</code></td><td>"and so many" — running total with connective -de</td></tr>
+      <tr><td><span class="sign-md">𐀞𐀫</span></td><td><code>pa-ro</code></td><td>"from, in the charge of" (para) — very common header word preceding a name</td></tr>
+      <tr><td><span class="sign-md">𐀃𐀠</span></td><td><code>o-pi</code></td><td>"in addition to, above" (epi) — used with quantities</td></tr>
+      <tr><td><span class="sign-md">𐀸𐀐</span></td><td><code>we-ke</code></td><td>"works on, makes" (wergei) — craftsman formula</td></tr>
+      <tr><td><span class="sign-md">𐀁𐀏</span></td><td><code>e-ko</code></td><td>"has/holds" (ekhei) — possession formula</td></tr>
+      <tr><td><span class="sign-md">𐀈𐀐</span></td><td><code>do-ke</code></td><td>"gave" (dōke) — past delivery formula (no augment)</td></tr>
+      <tr><td><span class="sign-md">𐀀𐀟𐀈𐀐</span></td><td><code>a-pe-do-ke</code></td><td>"delivered, gave back" — only augmented verb form in corpus</td></tr>
+      <tr><td><span class="sign-md">𐀀𐀙𐀺𐀸</span></td><td><code>a-no-we</code></td><td>"without handles" — descriptive adjective in vessel inventories</td></tr>
+    </table>
+  </div>
+
+  <!-- SCRIBAL RULES -->
+  <div id="gram-scribal" class="gram-sec" style="display:none">
+    <div class="panel">
+      <p>Linear B was adapted from Linear A, a script designed for a non-Greek language. This mismatch forced scribes to develop orthographic workarounds. These rules are <strong>essential</strong> to reading — without them, words look unrecognisable. Sources: Wikipedia Linear B, Ventris &amp; Chadwick <em>Documents</em>.</p>
+    </div>
+    <div class="rules-grid" id="rules-grid"></div>
+  </div>
+
+</main>
+<footer><span class="signs">𐀷𐀙𐀏 𐀯𐀵 𐀏𐀏 𐀴𐀪𐀡</span>Linear B Mycenaean Script Reference</footer>
+
+<script src="../js/data.js"></script>
+<script>
+function showGram(id, btn) {
+  document.querySelectorAll('.gram-sec').forEach(s => s.style.display = 'none');
+  document.querySelectorAll('#gram-cases, #gram-declensions, #gram-verbs, #gram-particles, #gram-scribal').forEach(s => s.style.display = 'none');
+  document.getElementById('gram-' + id).style.display = 'block';
+  document.querySelectorAll('.gram-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (id === 'declensions') showDecl('wanax', document.querySelector('#gram-declensions .gram-tab'));
+  if (id === 'scribal') buildRules();
+}
+
+const DECL_DATA = {
+  wanax: {
+    title: 'wanax — "king" (3rd declension consonant stem wanakt-)',
+    rows: [
+      ['Nominative','wa-na-ka','𐀷𐀙𐀏','wanaks','★ directly attested'],
+      ['Genitive','wa-na-ka-to','𐀷𐀙𐀏𐀵','wanaktos','★ directly attested'],
+      ['Dative','wa-na-ka-te','𐀷𐀙𐀏𐀳','wanaktei','★ directly attested'],
+      ['Accusative','wa-na-ka-ta','𐀷𐀙𐀏𐀲','wanakta','reconstructed'],
+      ['Adj. (gen.)','wa-na-ka-te-ro','𐀷𐀙𐀏𐀳𐀫','wanakteros ("of the king")','★ directly attested'],
+    ]
+  },
+  doero: {
+    title: 'do-e-ro — "slave" (2nd declension masc. o-stem)',
+    rows: [
+      ['Nominative','do-e-ro','𐀈𐀁𐀫','doelos','★'],
+      ['Genitive','do-e-ro-jo','𐀈𐀁𐀫𐀍','doelojo','★'],
+      ['Dative','do-e-ro-i','𐀈𐀁𐀫𐀂','doeloi','reconstructed'],
+      ['Female nom.','do-e-ra','𐀈𐀁𐀨','doelā (female slave)','★'],
+    ]
+  },
+  sito: {
+    title: 'si-to — "grain, wheat" (2nd declension neuter o-stem)',
+    rows: [
+      ['Nominative','si-to','𐀯𐀵','sitos','★'],
+      ['Genitive','si-to-jo','𐀯𐀵𐀍','sitojo','attested'],
+      ['Acc. plural','si-ta','𐀯𐀲','sita','★'],
+      ['With total','to-so si-to','𐀵𐀰 𐀯𐀵','tosos sitos = "so much grain"','★ hundreds of tablets'],
+    ]
+  }
+};
+
+function showDecl(id, btn) {
+  document.querySelectorAll('#gram-declensions .gram-tab').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const d = DECL_DATA[id];
+  document.getElementById('decl-content').innerHTML = `
+    <div style="font-size:.95rem;font-weight:600;color:var(--clay-light);margin-bottom:.75rem;font-family:var(--font-display)">${d.title}</div>
+    <table>
+      <tr><th>Case</th><th>Transliteration</th><th>Signs</th><th>Reconstructed</th><th></th></tr>
+      ${d.rows.map(r => `<tr>
+        <td>${r[0]}</td>
+        <td><code>${r[1]}</code></td>
+        <td><span class="sign-md">${r[2]}</span></td>
+        <td style="color:var(--ink-dim)">${r[3]}</td>
+        <td><span class="${r[4].startsWith('★') ? 'attested' : 'muted small'}">${r[4]}</span></td>
+      </tr>`).join('')}
+    </table>`;
+}
+
+function buildRules() {
+  const grid = document.getElementById('rules-grid');
+  if (grid.innerHTML) return;
+  grid.innerHTML = SCRIBAL_RULES.map(r => `
+    <div class="rule-card">
+      <strong>${r.n}. ${r.title}</strong>
+      <p>${r.body}</p>
+      <span class="ex">${r.ex}</span>
+    </div>`).join('');
+}
+
+// init
+document.querySelectorAll('.gram-sec').forEach(s => s.style.display = 'none');
+document.getElementById('gram-cases').style.display = 'block';
+</script>
+</body>
+</html>
