@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Syllabary — Linear B</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-logo">Linear B<span>Mycenaean Greek Script</span></div>
+  <ul class="nav-links">
+    <li><a href="../index.html">Home</a></li>
+    <li><a href="syllabary.html" class="active">Syllabary</a></li>
+    <li><a href="transliterator.html">Transliterator</a></li>
+    <li><a href="tablets.html">Tablets</a></li>
+    <li><a href="grammar.html">Grammar</a></li>
+    <li><a href="vocabulary.html">Vocabulary</a></li>
+    <li><a href="numbers.html">Numbers</a></li>
+    <li><a href="quiz.html">Quiz</a></li>
+    <li><a href="decode.html">Decode</a></li>
+  </ul>
+</nav>
+
+<main class="page">
+  <div class="page-hero">
+    <div class="section-title">Reference</div>
+    <h1>The Syllabary</h1>
+    <p class="subtitle">59 core syllabic signs, verified against the Unicode Linear B block (U+10000–U+1003F) and kinezika.com</p>
+  </div>
+
+  <div class="panel">
+    <p>Linear B is a <strong>syllabary</strong>, not an alphabet. Each sign represents a syllable of the form V (vowel alone) or CV (consonant + vowel). It cannot directly represent consonant clusters or word-final consonants — scribal rules handle these limitations. Click any sign to see its details, notes, and an attested example from the tablets.</p>
+  </div>
+
+  <div class="syl-grid" id="syl-grid"></div>
+
+  <div class="detail-box" id="detail-box">
+    <div style="color:var(--ink-faint);font-style:italic;font-size:.9rem">Select a sign above to see details.</div>
+  </div>
+
+  <div class="mt3">
+    <div class="section-title">The Grid System</div>
+    <div class="panel">
+      <p>Signs are organised by <strong>vowel column</strong> (a, e, i, o, u) and <strong>consonant row</strong>. Some cells are empty — those CV combinations either didn't exist or weren't needed in Mycenaean. The q-series (labio-velars) and w-series (digamma) disappeared entirely from later Greek.</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <span class="signs">𐀷𐀙𐀏 𐀯𐀵 𐀏𐀏 𐀴𐀪𐀡</span>
+  Linear B Mycenaean Script Reference
+</footer>
+
+<script src="../js/data.js"></script>
+<script>
+const grid = document.getElementById('syl-grid');
+const detailBox = document.getElementById('detail-box');
+let selectedCard = null;
+
+SIGN_DETAILS.forEach(s => {
+  const card = document.createElement('div');
+  card.className = 'syl-card';
+  card.innerHTML = `<span class="sign">${s.sign}</span><span class="val">${s.val}</span>`;
+  card.addEventListener('click', () => {
+    if (selectedCard) selectedCard.classList.remove('selected');
+    card.classList.add('selected');
+    selectedCard = card;
+    detailBox.innerHTML = `
+      <div class="big-sign">${s.sign}</div>
+      <div>
+        <div class="detail-val">${s.val}</div>
+        <div class="detail-note">${s.note}</div>
+        <div class="detail-ex">Example: <strong>${s.ex}</strong></div>
+      </div>`;
+  });
+  grid.appendChild(card);
+});
+</script>
+</body>
+</html>
+
