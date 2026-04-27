@@ -1,71 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Real Tablets — Linear B</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tablets — Linear B</title>
 <link rel="stylesheet" href="../css/style.css">
+<style>
+.diff-badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:.65rem;font-family:var(--font-mono);letter-spacing:.08em;margin-left:.5rem}
+.diff-Beginner{background:rgba(74,138,74,.2);color:#7dd87d;border:1px solid rgba(74,138,74,.3)}
+.diff-Intermediate{background:rgba(180,130,30,.2);color:var(--clay-light);border:1px solid rgba(180,130,30,.3)}
+.diff-Advanced{background:rgba(139,58,30,.2);color:#e08060;border:1px solid rgba(139,58,30,.3)}
+.tablet-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem;margin-bottom:1.25rem}
+.tablet-thumb{background:var(--stone-850);border:1px solid var(--stone-700);border-radius:var(--radius-md);padding:.85rem 1rem;cursor:pointer;transition:all .2s}
+.tablet-thumb:hover,.tablet-thumb.active{border-color:var(--amber-dim);background:var(--stone-800)}
+.tablet-thumb.active{border-color:var(--amber)}
+.tt-ref{font-family:var(--font-mono);font-size:.65rem;color:var(--amber-dim);margin-bottom:.25rem}
+.tt-name{font-size:.82rem;font-weight:600;color:var(--stone-200);margin-bottom:.35rem}
+.tt-date{font-size:.72rem;color:var(--ink-faint)}
+</style>
 </head>
 <body>
-<nav class="nav">
-  <div class="nav-logo">Linear B<span>Mycenaean Greek Script</span></div>
-  <ul class="nav-links">
-    <li><a href="../index.html">Home</a></li>
-    <li><a href="syllabary.html">Syllabary</a></li>
-    <li><a href="transliterator.html">Transliterator</a></li>
-    <li><a href="tablets.html" class="active">Tablets</a></li>
-    <li><a href="grammar.html">Grammar</a></li>
-    <li><a href="vocabulary.html">Vocabulary</a></li>
-    <li><a href="numbers.html">Numbers</a></li>
-    <li><a href="quiz.html">Quiz</a></li>
-    <li><a href="decode.html">Decode</a></li>
-  </ul>
-</nav>
+<nav class="nav"></nav>
 <main class="page">
   <div class="page-hero">
     <div class="section-title">Primary Sources</div>
-    <h1>Real Tablets</h1>
-    <p class="subtitle">Transcriptions and translations of three key tablets from Pylos, verified against published corpora</p>
+    <h1 id="pg-title">Real Tablets</h1>
+    <p class="subtitle">7 tablets from Pylos and Knossos · line-by-line transliteration and translation · verified scholarship</p>
   </div>
-  <div class="tablet-sel" id="tablet-sel">
-    <button class="tablet-btn active" onclick="showTablet('ta641',this)">PY Ta 641 — Tripod Tablet</button>
-    <button class="tablet-btn" onclick="showTablet('cn608',this)">PY Cn 608 — Pig Tablet</button>
-    <button class="tablet-btn" onclick="showTablet('fn7',this)">PY Fn 7 — Oil Rations</button>
+
+  <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem">
+    <button class="chip active" onclick="filterDiff('All',this)">All</button>
+    <button class="chip" onclick="filterDiff('Beginner',this)">Beginner</button>
+    <button class="chip" onclick="filterDiff('Intermediate',this)">Intermediate</button>
+    <button class="chip" onclick="filterDiff('Advanced',this)">Advanced</button>
   </div>
+
+  <div class="tablet-grid" id="tablet-thumbs"></div>
   <div class="tablet-panel" id="tablet-panel"></div>
+
   <div class="panel mt3">
     <h3>How to read a Linear B tablet</h3>
-    <p>Each line typically contains: a <strong>label or heading word</strong> (often a title or place name), followed by a <strong>commodity ideogram</strong> (a pictographic sign), followed by a <strong>number</strong>. The ideogram tells you what is being counted even if you can't read the words. Word dividers (short vertical strokes, transcribed as commas) separate entries.</p>
+    <p>Each line typically contains: a <strong>label or name</strong> (person, place, or title), a <strong>commodity ideogram</strong> (pictographic sign telling you what is counted), and a <strong>number</strong>. Difficulty ratings reflect how much scholarly context is needed to interpret the text.</p>
   </div>
 </main>
 <footer><span class="signs">𐀷𐀙𐀏 𐀯𐀵 𐀏𐀏 𐀴𐀪𐀡</span>Linear B Mycenaean Script Reference</footer>
 <script src="../js/data.js"></script>
+<script src="../js/nav.js"></script>
 <script>
-function showTablet(id, btn) {
-  document.querySelectorAll('.tablet-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const T = TABLETS[id];
-  const lines = T.lines.map(l => `
+const ORDER=['ta641','cn608','fn7','tn316','jn829','kn_fp1','py_an1'];
+let activeDiff='All', activeKey=null;
+
+function buildThumbs(){
+  const cont=document.getElementById('tablet-thumbs');
+  cont.innerHTML='';
+  ORDER.forEach(key=>{
+    const T=TABLETS[key];
+    if(activeDiff!=='All'&&T.difficulty!==activeDiff)return;
+    const d=document.createElement('div');
+    d.className='tablet-thumb'+(activeKey===key?' active':'');
+    d.innerHTML=`<div class="tt-ref">${T.ref}</div><div class="tt-name">${T.name}</div><div class="tt-date">${T.date.split('·')[0].trim()} <span class="diff-badge diff-${T.difficulty}">${T.difficulty}</span></div>`;
+    d.addEventListener('click',()=>showTablet(key));
+    cont.appendChild(d);
+  });
+}
+
+function showTablet(key){
+  activeKey=key;
+  buildThumbs();
+  const T=TABLETS[key];
+  const lines=T.lines.map(l=>`
     <div class="tablet-line">
       <span class="t-num">${l.n}</span>
       <div>
         <div class="t-signs">${l.signs}</div>
-        <div class="t-translit">${l.translit}${l.ideogram ? `<span class="t-ideogram">${l.ideogram}</span>` : ''}</div>
+        <div class="t-translit">${l.translit}${l.ideogram?`<span class="t-ideogram">${l.ideogram}`:''}</span></div>
       </div>
       <div class="t-meaning">${l.meaning}</div>
     </div>`).join('');
-  document.getElementById('tablet-panel').innerHTML = `
-    <div class="tablet-meta">${T.date}</div>
+  document.getElementById('tablet-panel').innerHTML=`
+    <div class="tablet-meta">${T.date} <span class="diff-badge diff-${T.difficulty}">${T.difficulty}</span></div>
     <div class="tablet-title">${T.ref} — ${T.name}</div>
     <div class="tablet-desc">${T.desc}</div>
     <div style="display:grid;grid-template-columns:36px 1fr 1fr;gap:0 16px;padding-bottom:6px;border-bottom:1px solid var(--stone-700);margin-bottom:4px">
       <span style="font-size:.6rem;color:var(--ink-faint);font-family:var(--font-mono)">line</span>
       <span style="font-size:.6rem;color:var(--ink-faint);font-family:var(--font-mono)">signs + transliteration</span>
       <span style="font-size:.6rem;color:var(--ink-faint);font-family:var(--font-mono)">meaning</span>
-    </div>
-    ${lines}`;
+    </div>${lines}`;
 }
-showTablet('ta641', document.querySelector('.tablet-btn'));
+
+function filterDiff(d,btn){
+  activeDiff=d; activeKey=null;
+  document.querySelectorAll('.chip').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  buildThumbs();
+  document.getElementById('tablet-panel').innerHTML='';
+}
+
+buildThumbs();
+showTablet('ta641');
 </script>
 </body>
 </html>
