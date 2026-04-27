@@ -1,82 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vocabulary — Linear B</title>
 <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-<nav class="nav">
-  <div class="nav-logo">Linear B<span>Mycenaean Greek Script</span></div>
-  <ul class="nav-links">
-    <li><a href="../index.html">Home</a></li>
-    <li><a href="syllabary.html">Syllabary</a></li>
-    <li><a href="transliterator.html">Transliterator</a></li>
-    <li><a href="tablets.html">Tablets</a></li>
-    <li><a href="grammar.html">Grammar</a></li>
-    <li><a href="vocabulary.html" class="active">Vocabulary</a></li>
-    <li><a href="numbers.html">Numbers</a></li>
-    <li><a href="quiz.html">Quiz</a></li>
-    <li><a href="decode.html">Decode</a></li>
-  </ul>
-</nav>
+<nav class="nav"></nav>
 <main class="page">
   <div class="page-hero">
     <div class="section-title">Reference</div>
     <h1>Vocabulary</h1>
-    <p class="subtitle">Attested Mycenaean words grouped by domain. Click any card for full details and tablet references.</p>
+    <p class="subtitle">Attested Mycenaean words grouped by domain. Click any card for full details.</p>
   </div>
-
   <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.25rem" id="vf-bar"></div>
   <div class="vocab-grid" id="vocab-grid"></div>
   <div class="vocab-detail" id="vocab-detail"></div>
 </main>
 <footer><span class="signs">𐀷𐀙𐀏 𐀯𐀵 𐀏𐀏 𐀴𐀪𐀡</span>Linear B Mycenaean Script Reference</footer>
-
 <script src="../js/data.js"></script>
+<script src="../js/nav.js"></script>
 <script>
-const domains = ['All', ...new Set(VOCAB.map(v => v.domain))];
-let activeFilter = 'All';
+const domains=['All',...new Set(VOCAB.map(v=>v.domain))];
+let activeF='All';
 
-function buildFilter() {
-  document.getElementById('vf-bar').innerHTML = domains.map(d =>
-    `<button class="chip${d === 'All' ? ' active' : ''}" onclick="filterVocab('${d}',this)">${d}</button>`
-  ).join('');
+function buildFilter(){
+  document.getElementById('vf-bar').innerHTML=domains.map(d=>`<button class="chip${d==='All'?' active':''}" onclick="filterV('${d}',this)">${d}</button>`).join('');
 }
 
-function filterVocab(d, btn) {
-  activeFilter = d;
-  document.querySelectorAll('#vf-bar .chip').forEach(b => b.classList.remove('active'));
+function filterV(d,btn){
+  activeF=d;
+  document.querySelectorAll('#vf-bar .chip').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   renderGrid();
-  document.getElementById('vocab-detail').classList.remove('show');
-  document.getElementById('vocab-detail').innerHTML = '';
+  const det=document.getElementById('vocab-detail');
+  det.classList.remove('show'); det.innerHTML='';
 }
 
-function renderGrid() {
-  const filtered = activeFilter === 'All' ? VOCAB : VOCAB.filter(v => v.domain === activeFilter);
-  document.getElementById('vocab-grid').innerHTML = filtered.map(v => `
-    <div class="vocab-card" onclick="showDetail(${VOCAB.indexOf(v)})">
-      <div class="vc-signs">${v.sylls.map(s => SIGNS[s] || '?').join('')}</div>
+function renderGrid(){
+  const filtered=activeF==='All'?VOCAB:VOCAB.filter(v=>v.domain===activeF);
+  document.getElementById('vocab-grid').innerHTML=filtered.map(v=>`
+    <div class="vocab-card" onclick="showDet(${VOCAB.indexOf(v)})">
+      <div class="vc-signs">${v.sylls.map(s=>SIGNS[s]||'?').join('')}</div>
       <div class="vc-trans">${v.translit}</div>
       <div class="vc-mean">${v.meaning}</div>
       <div class="vc-dom">${v.domain}</div>
     </div>`).join('');
 }
 
-function showDetail(i) {
-  const v = VOCAB[i];
-  const chips = v.sylls.map(s => `
-    <div class="syl-chip-detail">
-      <span class="cs">${SIGNS[s] || '?'}</span>
-      <span class="cv">${s}</span>
-    </div>`).join('');
-  const det = document.getElementById('vocab-detail');
+function showDet(i){
+  const v=VOCAB[i];
+  const chips=v.sylls.map(s=>`<div class="syl-chip-detail"><span class="cs">${SIGNS[s]||'?'}</span><span class="cv">${s}</span></div>`).join('');
+  const det=document.getElementById('vocab-detail');
   det.classList.add('show');
-  det.innerHTML = `
+  det.innerHTML=`
     <div style="display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap;margin-bottom:.75rem">
-      <span style="font-size:3rem;line-height:1">${v.sylls.map(s => SIGNS[s]||'?').join('')}</span>
+      <span style="font-size:3rem;line-height:1">${v.sylls.map(s=>SIGNS[s]||'?').join('')}</span>
       <div>
         <div style="font-size:1.1rem;font-weight:600;color:var(--stone-100)">${v.translit}</div>
         <div style="font-size:.95rem;color:var(--ink-dim)">${v.meaning}</div>
@@ -85,11 +64,10 @@ function showDetail(i) {
     </div>
     <p style="font-size:.9rem;margin-bottom:.75rem">${v.detail}</p>
     <div class="breakdown-row">${chips}</div>`;
-  det.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  det.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-buildFilter();
-renderGrid();
+buildFilter(); renderGrid();
 </script>
 </body>
 </html>
