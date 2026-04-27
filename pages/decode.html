@@ -1,157 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Decode — Linear B</title>
 <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-<nav class="nav">
-  <div class="nav-logo">Linear B<span>Mycenaean Greek Script</span></div>
-  <ul class="nav-links">
-    <li><a href="../index.html">Home</a></li>
-    <li><a href="syllabary.html">Syllabary</a></li>
-    <li><a href="transliterator.html">Transliterator</a></li>
-    <li><a href="tablets.html">Tablets</a></li>
-    <li><a href="grammar.html">Grammar</a></li>
-    <li><a href="vocabulary.html">Vocabulary</a></li>
-    <li><a href="numbers.html">Numbers</a></li>
-    <li><a href="quiz.html">Quiz</a></li>
-    <li><a href="decode.html" class="active">Decode</a></li>
-  </ul>
-</nav>
+<nav class="nav"></nav>
 <main class="page">
   <div class="page-hero">
     <div class="section-title">Practice</div>
     <h1>Decode Challenge</h1>
-    <p class="subtitle">A real Linear B word from the tablets appears. Click the syllables in the correct order to spell it out.</p>
+    <p class="subtitle">A real Linear B word from the tablets appears. Click the syllables in the correct order.</p>
   </div>
-
   <div class="panel" style="margin-bottom:1.25rem">
-    <p>Click syllable tiles in the right order. Click a filled slot to remove it and try again. Each correct decode reveals which tablet the word comes from and what it means.</p>
+    <p>Click syllable tiles in order to fill the slots. Click a filled slot to undo it. Each correct decode reveals which tablet the word comes from and what it means.</p>
   </div>
-
   <div class="decode-word-display" id="dc-word"></div>
   <div class="decode-slots" id="dc-slots"></div>
   <div class="decode-choices" id="dc-choices"></div>
   <div class="decode-feedback" id="dc-feedback"></div>
-
   <div class="btn-row">
-    <button class="btn btn-primary" onclick="dcNext()">Next Word →</button>
-    <button class="btn" onclick="dcClear()">Clear</button>
+    <button class="btn btn-primary" onclick="dcNext()" id="dc-next-btn">Next Word →</button>
+    <button class="btn" onclick="dcClear()" id="dc-clear-btn">Clear</button>
   </div>
-
   <div style="font-size:.8rem;color:var(--ink-faint);margin:.5rem 0" id="dc-score">Score: 0 / 0</div>
-
-  <div class="decode-reveal" id="dc-reveal">
-    <div id="dc-reveal-content"></div>
-  </div>
+  <div class="decode-reveal" id="dc-reveal"><div id="dc-reveal-content"></div></div>
 </main>
 <footer><span class="signs">𐀷𐀙𐀏 𐀯𐀵 𐀏𐀏 𐀴𐀪𐀡</span>Linear B Mycenaean Script Reference</footer>
-
 <script src="../js/data.js"></script>
+<script src="../js/nav.js"></script>
 <script>
-let dcWords = shuffle([...DECODE_WORDS]);
-let dcIdx = 0, dcScore = 0, dcTotal = 0;
-let dcCurrent = null, dcAnswer = [], dcLocked = false;
+let dcWords=shuffle([...DECODE_WORDS]),dcIdx=0,dcScore=0,dcTotal=0;
+let dcCurrent=null,dcAnswer=[],dcLocked=false;
 
-function dcLoad() {
-  if (dcIdx >= dcWords.length) { dcWords = shuffle([...DECODE_WORDS]); dcIdx = 0; }
-  dcCurrent = dcWords[dcIdx++];
-  dcAnswer = [];
-  dcLocked = false;
-  document.getElementById('dc-feedback').textContent = '';
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('dc-next-btn').textContent=t('next');
+  document.getElementById('dc-clear-btn').textContent=t('clear');
+  dcLoad();
+});
+
+function dcLoad(){
+  if(dcIdx>=dcWords.length){dcWords=shuffle([...DECODE_WORDS]);dcIdx=0;}
+  dcCurrent=dcWords[dcIdx++]; dcAnswer=[]; dcLocked=false;
+  document.getElementById('dc-feedback').textContent='';
   document.getElementById('dc-reveal').classList.remove('show');
-
-  // Display signs
-  document.getElementById('dc-word').textContent = word(dcCurrent.sylls);
-
-  // Slots
-  const slotsDiv = document.getElementById('dc-slots');
-  slotsDiv.innerHTML = '';
-  dcCurrent.sylls.forEach((_, i) => {
-    const d = document.createElement('div');
-    d.className = 'decode-slot';
-    d.id = `slot-${i}`;
-    d.textContent = '_';
-    d.addEventListener('click', () => dcRemove(i));
-    slotsDiv.appendChild(d);
+  document.getElementById('dc-word').textContent=word(dcCurrent.sylls);
+  const sd=document.getElementById('dc-slots'); sd.innerHTML='';
+  dcCurrent.sylls.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='decode-slot'; d.id=`slot-${i}`; d.textContent='_';
+    d.addEventListener('click',()=>dcRemove(i));
+    sd.appendChild(d);
   });
-
-  // Choices: correct syllables + distractors
-  const allSyls = Object.keys(SIGNS);
-  const distractors = shuffle(allSyls.filter(k => !dcCurrent.sylls.includes(k))).slice(0, 5);
-  const choices = shuffle([...dcCurrent.sylls, ...distractors]);
-  const choicesDiv = document.getElementById('dc-choices');
-  choicesDiv.innerHTML = '';
-  choices.forEach(c => {
-    const b = document.createElement('div');
-    b.className = 'decode-choice';
-    b.id = `choice-${c}`;
-    b.textContent = c;
-    b.addEventListener('click', () => dcPick(c, b));
-    choicesDiv.appendChild(b);
+  const allS=Object.keys(SIGNS);
+  const dist=shuffle(allS.filter(k=>!dcCurrent.sylls.includes(k))).slice(0,5);
+  const choices=shuffle([...dcCurrent.sylls,...dist]);
+  const cd=document.getElementById('dc-choices'); cd.innerHTML='';
+  choices.forEach(c=>{
+    const b=document.createElement('div');
+    b.className='decode-choice'; b.id=`choice-${c}`; b.textContent=c;
+    b.addEventListener('click',()=>dcPick(c,b));
+    cd.appendChild(b);
   });
 }
 
-function dcPick(val, btn) {
-  if (dcLocked) return;
-  const next = dcAnswer.length;
-  if (next >= dcCurrent.sylls.length) return;
-  dcAnswer.push(val);
-  btn.classList.add('used');
-  const slot = document.getElementById(`slot-${next}`);
-  slot.textContent = val;
-  slot.classList.add('filled');
-  if (dcAnswer.length === dcCurrent.sylls.length) dcCheck();
+function dcPick(val,btn){
+  if(dcLocked)return;
+  const next=dcAnswer.length;
+  if(next>=dcCurrent.sylls.length)return;
+  dcAnswer.push(val); btn.classList.add('used');
+  const sl=document.getElementById(`slot-${next}`);
+  sl.textContent=val; sl.classList.add('filled');
+  if(dcAnswer.length===dcCurrent.sylls.length)dcCheck();
 }
 
-function dcRemove(i) {
-  if (dcLocked || i >= dcAnswer.length) return;
-  const removed = dcAnswer[i];
-  dcAnswer = dcAnswer.slice(0, i);
-  // Reset slots from i onward
-  for (let j = i; j < dcCurrent.sylls.length; j++) {
-    const sl = document.getElementById(`slot-${j}`);
-    sl.textContent = '_';
-    sl.className = 'decode-slot';
-  }
-  // Re-enable the removed choice
-  const btn = document.getElementById(`choice-${removed}`);
-  if (btn) btn.classList.remove('used');
+function dcRemove(i){
+  if(dcLocked||i>=dcAnswer.length)return;
+  const removed=dcAnswer[i]; dcAnswer=dcAnswer.slice(0,i);
+  for(let j=i;j<dcCurrent.sylls.length;j++){const sl=document.getElementById(`slot-${j}`);sl.textContent='_';sl.className='decode-slot';}
+  const btn=document.getElementById(`choice-${removed}`);
+  if(btn)btn.classList.remove('used');
 }
 
-function dcCheck() {
-  dcLocked = true;
-  dcTotal++;
-  let correct = true;
-  dcAnswer.forEach((v, i) => {
-    const sl = document.getElementById(`slot-${i}`);
+function dcCheck(){
+  dcLocked=true; dcTotal++;
+  let correct=true;
+  dcAnswer.forEach((v,i)=>{
+    const sl=document.getElementById(`slot-${i}`);
     sl.classList.remove('filled');
-    if (v === dcCurrent.sylls[i]) {
-      sl.classList.add('correct');
-    } else {
-      sl.classList.add('wrong');
-      correct = false;
-    }
+    sl.classList.add(v===dcCurrent.sylls[i]?'correct':'wrong');
+    if(v!==dcCurrent.sylls[i])correct=false;
   });
-
-  if (correct) {
-    dcScore++;
-    document.getElementById('dc-feedback').textContent = '✓ Correct!';
-  } else {
-    document.getElementById('dc-feedback').textContent = `✗ The answer was: ${dcCurrent.translit}`;
-  }
-
-  document.getElementById('dc-score').textContent = `Score: ${dcScore} / ${dcTotal}`;
-
-  // Reveal info
-  const reveal = document.getElementById('dc-reveal');
-  const chips = dcCurrent.sylls.map(s =>
-    `<div class="syl-chip-detail"><span class="cs">${SIGNS[s]||'?'}</span><span class="cv">${s}</span></div>`
-  ).join('');
-  document.getElementById('dc-reveal-content').innerHTML = `
+  document.getElementById('dc-feedback').textContent=correct?'✓ Correct!':`✗ The answer was: ${dcCurrent.translit}`;
+  if(correct)dcScore++;
+  document.getElementById('dc-score').textContent=`${t('score')}: ${dcScore} / ${dcTotal}`;
+  const chips=dcCurrent.sylls.map(s=>`<div class="syl-chip-detail"><span class="cs">${SIGNS[s]||'?'}</span><span class="cv">${s}</span></div>`).join('');
+  document.getElementById('dc-reveal-content').innerHTML=`
     <div style="display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap;margin-bottom:.75rem">
       <span style="font-size:3rem;line-height:1">${word(dcCurrent.sylls)}</span>
       <div>
@@ -161,31 +106,20 @@ function dcCheck() {
       </div>
     </div>
     <div class="breakdown-row" style="margin-bottom:.75rem">${chips}</div>
-    <div style="font-size:.82rem;color:var(--ink-faint);line-height:1.7">
-      <strong style="color:var(--clay-light)">Tablet:</strong> ${dcCurrent.tablet}<br>
-      ${dcCurrent.note}
-    </div>`;
-  reveal.classList.add('show');
+    <div style="font-size:.82rem;color:var(--ink-faint);line-height:1.7"><strong style="color:var(--clay-light)">Tablet:</strong> ${dcCurrent.tablet}<br>${dcCurrent.note}</div>`;
+  document.getElementById('dc-reveal').classList.add('show');
 }
 
-function dcClear() {
-  if (!dcCurrent) return;
-  dcAnswer = [];
-  dcLocked = false;
-  document.getElementById('dc-feedback').textContent = '';
+function dcClear(){
+  if(!dcCurrent)return;
+  dcAnswer=[]; dcLocked=false;
+  document.getElementById('dc-feedback').textContent='';
   document.getElementById('dc-reveal').classList.remove('show');
-  for (let i = 0; i < dcCurrent.sylls.length; i++) {
-    const sl = document.getElementById(`slot-${i}`);
-    if (sl) { sl.textContent = '_'; sl.className = 'decode-slot'; }
-  }
-  document.querySelectorAll('.decode-choice').forEach(b => b.classList.remove('used'));
+  for(let i=0;i<dcCurrent.sylls.length;i++){const sl=document.getElementById(`slot-${i}`);if(sl){sl.textContent='_';sl.className='decode-slot';}}
+  document.querySelectorAll('.decode-choice').forEach(b=>b.classList.remove('used'));
 }
 
-function dcNext() {
-  dcLoad();
-}
-
-dcLoad();
+function dcNext(){dcLoad();}
 </script>
 </body>
 </html>
