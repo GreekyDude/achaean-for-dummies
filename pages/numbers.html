@@ -1,40 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Numbers — Linear B</title>
 <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-<nav class="nav">
-  <div class="nav-logo">Linear B<span>Mycenaean Greek Script</span></div>
-  <ul class="nav-links">
-    <li><a href="../index.html">Home</a></li>
-    <li><a href="syllabary.html">Syllabary</a></li>
-    <li><a href="transliterator.html">Transliterator</a></li>
-    <li><a href="tablets.html">Tablets</a></li>
-    <li><a href="grammar.html">Grammar</a></li>
-    <li><a href="vocabulary.html">Vocabulary</a></li>
-    <li><a href="numbers.html" class="active">Numbers</a></li>
-    <li><a href="quiz.html">Quiz</a></li>
-    <li><a href="decode.html">Decode</a></li>
-  </ul>
-</nav>
+<nav class="nav"></nav>
 <main class="page">
   <div class="page-hero">
     <div class="section-title">Reference</div>
     <h1>The Number System</h1>
-    <p class="subtitle">Linear B uses a decimal system. Signs are additive — stack them to build any number.</p>
+    <p class="subtitle">Linear B uses a decimal additive system. Stack signs to build any number.</p>
   </div>
-
   <div class="panel">
-    <p>Numbers in Linear B are written with <strong>Aegean numerals</strong> (Unicode block U+10100+). The system is strictly additive and decimal: 𐄇 = 1, 𐄙 = 10, 𐄢 = 100, 𐄫 = 1000. To write 34, you write 𐄙𐄙𐄙𐄊 (three 10s + one 4-sign). Numbers always follow the commodity ideogram they quantify.</p>
+    <p>Numbers use <strong>Aegean numerals</strong> (Unicode U+10100+). The system is strictly additive: 𐄇=1, 𐄙=10, 𐄢=100, 𐄫=1000. Numbers always follow the commodity ideogram they quantify on the tablet.</p>
   </div>
-
   <div class="section-title mt3">All Number Signs</div>
   <div class="num-grid" id="num-grid"></div>
-
   <div class="section-title mt3">Number Calculator</div>
   <div class="num-calc">
     <label style="display:block;font-family:var(--font-display);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:.5rem">Enter a number (1–9999)</label>
@@ -42,39 +25,26 @@
     <div class="num-result" id="num-out"></div>
     <div class="num-breakdown" id="num-break"></div>
   </div>
-
   <div class="panel mt3">
     <h3>How numbers appear on tablets</h3>
-    <p>A typical tablet entry reads: <strong>[recipient] [commodity ideogram] [number]</strong>. For example, the line <span style="font-size:1.2rem">𐀷𐀙𐀏 𐄫𐄢𐄙𐄇</span> would mean "wanax (king): 1,111 [units of grain]". The ideogram tells you what is being counted even if you can't read the words around it.</p>
+    <p>A typical line: <span style="font-size:1.2rem">𐀷𐀙𐀏</span> <span style="font-size:1.2rem">𐄫𐄢𐄙𐄇</span> = <em>wa-na-ka</em> [1111 units of grain]. The ideogram between the label and the number tells you what is being counted even without reading the words.</p>
   </div>
 </main>
 <footer><span class="signs">𐀷𐀙𐀏 𐀯𐀵 𐀏𐀏 𐀴𐀪𐀡</span>Linear B Mycenaean Script Reference</footer>
-
 <script src="../js/data.js"></script>
+<script src="../js/nav.js"></script>
 <script>
-// Build sign grid
-document.getElementById('num-grid').innerHTML = NUM_SIGNS.map(n =>
-  `<div class="num-card"><span class="ns">${n.sign}</span><span class="nv">${n.val.toLocaleString()}</span></div>`
-).join('');
-
-function calcNum(v) {
-  const n = parseInt(v);
-  if (isNaN(n) || n < 1 || n > 9999) {
-    document.getElementById('num-out').textContent = '';
-    document.getElementById('num-break').textContent = '';
-    return;
-  }
-  let out = '', parts = [], rem = n;
-  [[1000,'𐄫'],[100,'𐄢'],[10,'𐄙'],[1,'𐄇']].forEach(([val, sign]) => {
-    const count = Math.floor(rem / val);
-    rem %= val;
-    if (count) {
-      out += sign.repeat(count);
-      parts.push(`${count} × ${val}`);
-    }
+document.getElementById('num-grid').innerHTML=NUM_SIGNS.map(n=>`<div class="num-card"><span class="ns">${n.sign}</span><span class="nv">${n.val.toLocaleString()}</span></div>`).join('');
+function calcNum(v){
+  const n=parseInt(v);
+  if(isNaN(n)||n<1||n>9999){document.getElementById('num-out').textContent='';document.getElementById('num-break').textContent='';return;}
+  let out='',parts=[],rem=n;
+  [[1000,'𐄫'],[100,'𐄢'],[10,'𐄙'],[1,'𐄇']].forEach(([val,sign])=>{
+    const c=Math.floor(rem/val);rem%=val;
+    if(c){out+=sign.repeat(c);parts.push(`${c} × ${val}`);}
   });
-  document.getElementById('num-out').textContent = out;
-  document.getElementById('num-break').textContent = parts.join(' + ') + ' = ' + n;
+  document.getElementById('num-out').textContent=out;
+  document.getElementById('num-break').textContent=parts.join(' + ')+' = '+n;
 }
 </script>
 </body>
