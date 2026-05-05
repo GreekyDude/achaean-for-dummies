@@ -12,6 +12,7 @@
 .tr-input{width:100%;background:transparent;border:none;outline:none;font-family:var(--font-body);font-size:1.3rem;color:var(--stone-100);caret-color:var(--amber)}
 .tr-result{background:linear-gradient(135deg,var(--clay-dark),var(--stone-900));border:1px solid var(--amber-dim);border-radius:var(--radius-lg);padding:1.5rem;display:none;animation:fadeIn .3s ease}
 .tr-result.show{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 .tr-signs-big{font-size:4rem;letter-spacing:6px;color:var(--stone-50);margin-bottom:.75rem;text-shadow:0 0 30px rgba(239,224,196,.15)}
 .tr-myc{font-size:1rem;font-family:var(--font-mono);color:var(--amber);margin-bottom:.25rem}
 .tr-meaning{font-size:.95rem;color:var(--ink-dim);margin-bottom:.5rem}
@@ -39,7 +40,7 @@
 
   <div class="tr-wrap">
     <div class="tr-input-box">
-      <label id="tr-label">Search</label>
+      <label id="tr-label"></label>
       <input class="tr-input" id="tr-in" type="text" autocomplete="off" spellcheck="false" oninput="doSearch(this.value)" placeholder="">
     </div>
 
@@ -58,93 +59,143 @@
   </div>
 
   <div class="mt3">
-    <div class="section-title">Browse by Category</div>
+    <div class="section-title" id="browse-title">Browse by Category</div>
     <div class="cat-filter" id="cat-filter"></div>
     <div class="browse-grid" id="browse-grid"></div>
   </div>
 
-  <div class="panel mt3">
-    <h3>About this translator</h3>
-    <p>This tool searches ~40 attested Mycenaean words that have cognates or equivalents in modern English, French, and Greek. Linear B only records roughly 2,000–3,000 words — almost entirely palace administrative vocabulary. Most modern concepts, abstractions, and proper names have no attested Mycenaean form. When no match exists, the tool tells you so rather than guessing.</p>
-    <p style="margin-top:.5rem">Sources: <strong style="color:var(--stone-300)">Tselentis, Linear B Lexicon (2011)</strong>; Wikipedia Mycenaean Greek; kinezika.com.</p>
-  </div>
+  <div class="panel mt3" id="about-panel"></div>
 </main>
 <footer><span class="signs">𐀷𐀙𐀏 𐀯𐀵 𐀏𐀏 𐀴𐀪𐀡</span>Linear B Mycenaean Script Reference</footer>
 <script src="../js/data.js"></script>
 <script src="../js/nav.js"></script>
 <script>
-// Categories derived from en keys for browsing
-const CATS=['All','People & Titles','Religion','Commodities','Objects','Places','Other'];
+const STRINGS = {
+  en:{
+    title:'Translator',sub:'Type a word in English, French or Greek — find its Mycenaean equivalent',
+    browseTitle:'Browse by Category',
+    about:`<h3>About this translator</h3>
+      <p>This tool searches ~40 attested Mycenaean words that have cognates or equivalents in English, French, and Greek.
+      Linear B only records roughly 2,000–3,000 words — almost entirely palace administrative vocabulary.
+      Most modern concepts have no attested Mycenaean form. When no match exists, the tool says so rather than guessing.</p>
+      <p style="margin-top:.5rem">Sources: <strong style="color:var(--stone-300)">Tselentis, Linear B Lexicon (2011)</strong>; Wikipedia Mycenaean Greek; kinezika.com.</p>`,
+    cats:{All:'All','People & Titles':'People & Titles',Religion:'Religion',Commodities:'Commodities',Objects:'Objects',Places:'Places',Other:'Other'},
+  },
+  fr:{
+    title:'Traducteur',sub:'Tapez un mot en anglais, français ou grec — trouvez son équivalent mycénien',
+    browseTitle:'Parcourir par catégorie',
+    about:`<h3>À propos de ce traducteur</h3>
+      <p>Cet outil recherche ~40 mots mycéniens attestés ayant des cognats en anglais, français et grec.
+      Le Linéaire B ne contient que ~2 000–3 000 mots — presque entièrement du vocabulaire administratif palatial.
+      La plupart des concepts modernes n'ont pas de forme mycénienne attestée.</p>
+      <p style="margin-top:.5rem">Sources : <strong style="color:var(--stone-300)">Tselentis, Linear B Lexicon (2011)</strong> ; Wikipedia Greek mycénien ; kinezika.com.</p>`,
+    cats:{All:'Tous','People & Titles':'Personnes & Titres',Religion:'Religion',Commodities:'Marchandises',Objects:'Objets',Places:'Lieux',Other:'Autre'},
+  },
+  gr:{
+    title:'Μεταφραστής',sub:'Πληκτρολογήστε λέξη στα αγγλικά, γαλλικά ή ελληνικά — βρείτε το μυκηναϊκό ισοδύναμο',
+    browseTitle:'Περιήγηση ανά κατηγορία',
+    about:`<h3>Σχετικά με τον μεταφραστή</h3>
+      <p>Αυτό το εργαλείο αναζητά ~40 επικυρωμένες Μυκηναϊκές λέξεις που έχουν συγγενείς λέξεις στα αγγλικά, γαλλικά και ελληνικά.
+      Η Γραμμική Β καταγράφει μόνο ~2.000–3.000 λέξεις — σχεδόν αποκλειστικά διοικητικό λεξιλόγιο ανακτόρων.
+      Τα περισσότερα σύγχρονα νοήματα δεν έχουν επικυρωμένη Μυκηναϊκή μορφή. Όταν δεν βρεθεί αντιστοιχία, το εργαλείο το δηλώνει αντί να υποθέτει.</p>
+      <p style="margin-top:.5rem">Πηγές: <strong style="color:var(--stone-300)">Tselentis, Linear B Lexicon (2011)</strong>· Wikipedia Μυκηναϊκά Ελληνικά· kinezika.com.</p>`,
+    cats:{All:'Όλα','People & Titles':'Άνθρωποι & Τίτλοι',Religion:'Θρησκεία',Commodities:'Εμπορεύματα',Objects:'Αντικείμενα',Places:'Τόποι',Other:'Άλλα'},
+  },
+};
 
-function getCat(entry){
-  const e=entry.en[0];
-  if(['king','chieftain','army leader','slave','priestess','priest','shepherd','potter','free','father','mother','daughter','son','woman'].includes(e))return'People & Titles';
-  if(['god','mistress','poseidon','zeus','athena','hera','dionysus','sacred land'].includes(e))return'Religion';
-  if(['grain','oil','honey','wine','fig','bronze','gold','wool'].includes(e))return'Commodities';
-  if(['tripod','sword','helmet'].includes(e))return'Objects';
-  if(['pylos','knossos'].includes(e))return'Places';
-  return'Other';
+const S = STRINGS[LANG] || STRINGS.en;
+
+// Category assignment
+function getCat(entry) {
+  const e = entry.en[0];
+  if (['king','chieftain','army leader','slave','priestess','priest','shepherd','potter','free','father','mother','daughter','son','woman'].includes(e)) return 'People & Titles';
+  if (['god','mistress','poseidon','zeus','athena','hera','dionysus','sacred land'].includes(e)) return 'Religion';
+  if (['grain','oil','honey','wine','fig','bronze','gold','wool'].includes(e)) return 'Commodities';
+  if (['tripod','sword','helmet','table'].includes(e)) return 'Objects';
+  if (['pylos','knossos'].includes(e)) return 'Places';
+  return 'Other';
 }
 
-let activeCat='All';
+let activeCat = 'All';
 
-document.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('tr-in').placeholder=t('translate_placeholder');
-  document.getElementById('tr-label').textContent=t('translate_hint');
-  buildCatFilter(); buildBrowse();
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('pg-title').textContent = S.title;
+  document.getElementById('pg-sub').textContent = S.sub;
+  document.getElementById('browse-title').textContent = S.browseTitle;
+  document.getElementById('about-panel').innerHTML = S.about;
+  document.getElementById('tr-label').textContent = t('translate_hint');
+  document.getElementById('tr-in').placeholder = t('translate_placeholder');
+  document.getElementById('tr-none-msg').textContent = t('no_translation');
+  document.getElementById('tr-none-note').textContent = t('no_translation_note');
+  buildCatFilter();
+  buildBrowse();
 });
 
-function doSearch(v){
-  const res=document.getElementById('tr-result');
-  const none=document.getElementById('tr-none');
-  res.classList.remove('show'); none.classList.remove('show');
-  if(!v.trim())return;
-  const match=lookupTranslation(v);
-  if(match){
-    const sylls=match.myc.split('-');
-    document.getElementById('tr-signs').textContent=sylls.map(s=>SIGNS[s]||'?').join('');
-    document.getElementById('tr-myc').textContent=match.myc;
-    document.getElementById('tr-meaning').textContent=match.meaning;
-    document.getElementById('tr-chips').innerHTML=sylls.map(s=>`<div class="syl-chip-detail"><span class="cs">${SIGNS[s]||'?'}</span><span class="cv">${s}</span></div>`).join('');
-    document.getElementById('tr-note').innerHTML=`<strong style="color:var(--clay-light)">Note:</strong> ${match.note}`;
+function doSearch(v) {
+  const res = document.getElementById('tr-result');
+  const none = document.getElementById('tr-none');
+  res.classList.remove('show');
+  none.classList.remove('show');
+  if (!v.trim()) return;
+
+  const match = lookupTranslation(v);
+  if (match) {
+    const sylls = match.myc.split('-');
+    document.getElementById('tr-signs').textContent = sylls.map(s => SIGNS[s] || '?').join('');
+    document.getElementById('tr-myc').textContent = match.myc;
+    document.getElementById('tr-meaning').textContent = tF(match.meaning);
+    document.getElementById('tr-chips').innerHTML = sylls.map(s =>
+      `<div class="syl-chip-detail"><span class="cs">${SIGNS[s] || '?'}</span><span class="cv">${s}</span></div>`
+    ).join('');
+    document.getElementById('tr-note').innerHTML = tF(match.note);
     res.classList.add('show');
   } else {
-    document.getElementById('tr-none-msg').textContent=t('no_translation');
-    document.getElementById('tr-none-note').textContent=t('no_translation_note');
     none.classList.add('show');
   }
 }
 
-function buildCatFilter(){
-  const bar=document.getElementById('cat-filter');
-  CATS.forEach(c=>{
-    const b=document.createElement('button');
-    b.className='chip'+(c==='All'?' active':'');
-    b.textContent=c;
-    b.addEventListener('click',()=>{activeCat=c;document.querySelectorAll('.cat-filter .chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');buildBrowse();});
+function buildCatFilter() {
+  const bar = document.getElementById('cat-filter');
+  Object.keys(S.cats).forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'chip' + (c === 'All' ? ' active' : '');
+    b.textContent = S.cats[c];
+    b.addEventListener('click', () => {
+      activeCat = c;
+      document.querySelectorAll('.cat-filter .chip').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      buildBrowse();
+    });
     bar.appendChild(b);
   });
 }
 
-function buildBrowse(){
-  const grid=document.getElementById('browse-grid');
-  const filtered=activeCat==='All'?TRANSLATION_DICT:TRANSLATION_DICT.filter(e=>getCat(e)===activeCat);
-  grid.innerHTML=filtered.map(e=>{
-    const sylls=e.myc.split('-');
-    const signs=sylls.map(s=>SIGNS[s]||'?').join('');
-    const label=LANG==='fr'&&e.fr?e.fr[0]:LANG==='gr'&&e.gr?e.gr[0]:e.en[0];
+function buildBrowse() {
+  const grid = document.getElementById('browse-grid');
+  const filtered = activeCat === 'All'
+    ? TRANSLATION_DICT
+    : TRANSLATION_DICT.filter(e => getCat(e) === activeCat);
+
+  grid.innerHTML = filtered.map(e => {
+    const sylls = e.myc.split('-');
+    const signs = sylls.map(s => SIGNS[s] || '?').join('');
+    // Show label in active language
+    const label = LANG === 'fr' && e.fr ? e.fr[0]
+                : LANG === 'gr' && e.gr ? e.gr[0]
+                : e.en[0];
+    const meaning = tF(e.meaning).split('(')[0].trim();
     return `<div class="browse-card" onclick="fillSearch('${e.en[0]}')">
       <div class="bc-signs">${signs}</div>
       <div class="bc-en">${e.myc}</div>
-      <div class="bc-meaning">${label} → ${e.meaning.split('(')[0].trim()}</div>
+      <div class="bc-meaning">${label} → ${meaning}</div>
     </div>`;
   }).join('');
 }
 
-function fillSearch(val){
-  document.getElementById('tr-in').value=val;
+function fillSearch(val) {
+  document.getElementById('tr-in').value = val;
   doSearch(val);
-  window.scrollTo({top:0,behavior:'smooth'});
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 </script>
 </body>
