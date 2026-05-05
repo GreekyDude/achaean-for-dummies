@@ -10,8 +10,8 @@
 <main class="page">
   <div class="page-hero">
     <div class="section-title">Reference</div>
-    <h1>Grammar</h1>
-    <p class="subtitle">Cases, declensions, verbs, formulaic particles, and the 10 scribal rules</p>
+    <h1 id="pg-title">Grammar</h1>
+    <p class="subtitle" id="pg-sub">Cases, declensions, verbs, formulaic particles, and the 10 scribal rules</p>
   </div>
   <div class="gram-tabs" id="gram-tab-bar"></div>
   <div id="gram-content"></div>
@@ -20,121 +20,197 @@
 <script src="../js/data.js"></script>
 <script src="../js/nav.js"></script>
 <script>
-const GRAM_TABS=[
-  {key:'cases',   label:{en:'Cases',fr:'Cas',gr:'Πτώσεις'}},
-  {key:'decl',    label:{en:'Declensions',fr:'Déclinaisons',gr:'Κλίσεις'}},
-  {key:'verbs',   label:{en:'Verbs',fr:'Verbes',gr:'Ρήματα'}},
-  {key:'particles',label:{en:'Particles & Formulae',fr:'Particules',gr:'Μόρια'}},
-  {key:'scribal', label:{en:'Scribal Rules',fr:'Règles de scribes',gr:'Κανόνες γραφής'}},
-];
+const STRINGS = {
+  en:{title:'Grammar',sub:'Cases, declensions, verbs, formulaic particles, and the 10 scribal rules',
+    cases_intro:'Mycenaean Greek had <strong>5 cases</strong> — nominative, accusative, genitive, dative-locative, and instrumental. Because Linear B drops final consonants, cases are often visually similar — context and ideograms disambiguate. Source: Ventris & Chadwick, <em>Documents in Mycenaean Greek</em>.',
+    decl_intro:'★ = directly attested on tablets. Others reconstructed from spelling rules. Source: Tentative Grammar §19–23.',
+    verbs_intro:'Verbs are poorly represented — tablets are administrative records. The past-tense augment (e- prefix) is <strong>almost entirely absent</strong>. Only one augmented form exists in the entire corpus: <code>a-pe-do-ke</code>.',
+    particles_intro:'These short words recur across hundreds of tablets. Recognising them lets you parse an unfamiliar tablet quickly — even before you can read the content words.',
+    scribal_intro:'Linear B was adapted from Linear A (a non-Greek script). This mismatch created systematic spelling workarounds. These 10 rules are <strong>essential</strong> to reading.',
+    th_case:'Case',th_fn:'Function',th_lb:'Linear B',th_signs:'Signs',th_rec:'Reconstructed',
+    th_val:'Transliteration',th_meaning:'Meaning',th_att:'',
+    wanax_title:'wanax — "king" (3rd decl. consonant stem wanakt-)',
+    doero_title:'do-e-ro — "slave" (2nd decl. masc. o-stem)',
+    sito_title:'si-to — "grain" (2nd decl. neuter o-stem)',
+  },
+  fr:{title:'Grammaire',sub:'Cas, déclinaisons, verbes, particules et les 10 règles de scribes',
+    cases_intro:'Le grec mycénien avait <strong>5 cas</strong> — nominatif, accusatif, génitif, datif-locatif et instrumental. Source : Ventris & Chadwick, <em>Documents in Mycenaean Greek</em>.',
+    decl_intro:'★ = directement attesté sur les tablettes. Les autres sont reconstruits. Source : Tentative Grammar §19–23.',
+    verbs_intro:'Les verbes sont peu représentés — les tablettes sont des registres administratifs. L\'augment du passé (préfixe e-) est <strong>presque entièrement absent</strong>. Un seul forme augmentée existe : <code>a-pe-do-ke</code>.',
+    particles_intro:'Ces mots courts apparaissent dans des centaines de tablettes. Les reconnaître permet d\'analyser rapidement une tablette inconnue.',
+    scribal_intro:'Le Linéaire B a été adapté du Linéaire A (un script non-grec). Ce décalage a créé des contournements orthographiques systématiques. Ces 10 règles sont <strong>essentielles</strong> à la lecture.',
+    th_case:'Cas',th_fn:'Fonction',th_lb:'Linéaire B',th_signs:'Signes',th_rec:'Reconstruit',
+    th_val:'Translittération',th_meaning:'Signification',th_att:'',
+    wanax_title:'wanax — "roi" (3e décl. tige consonantique wanakt-)',
+    doero_title:'do-e-ro — "esclave" (2e décl. masc. tige en -o)',
+    sito_title:'si-to — "grain" (2e décl. neutre tige en -o)',
+  },
+  gr:{title:'Γραμματική',sub:'Πτώσεις, κλίσεις, ρήματα, μόρια και οι 10 κανόνες γραφής',
+    cases_intro:'Τα Μυκηναϊκά Ελληνικά είχαν <strong>5 πτώσεις</strong> — ονομαστική, αιτιατική, γενική, δοτική-τοπική και οργανική. Πηγή: Ventris & Chadwick, <em>Documents in Mycenaean Greek</em>.',
+    decl_intro:'★ = άμεσα μαρτυρούμενο στις πινακίδες. Τα υπόλοιπα ανακατασκευασμένα. Πηγή: Tentative Grammar §19–23.',
+    verbs_intro:'Τα ρήματα είναι ελλιπώς εκπροσωπούμενα — οι πινακίδες είναι διοικητικά αρχεία. Η αυξητική αόριστη πρόθεση e- είναι <strong>σχεδόν απούσα</strong>. Υπάρχει μόνο μία αυξημένη μορφή: <code>a-pe-do-ke</code>.',
+    particles_intro:'Αυτές οι σύντομες λέξεις εμφανίζονται σε εκατοντάδες πινακίδες. Η αναγνώρισή τους επιτρέπει γρήγορη ανάλυση μιας άγνωστης πινακίδας.',
+    scribal_intro:'Η Γραμμική Β προσαρμόστηκε από τη Γραμμική Α (μη-ελληνικό σύστημα). Αυτή η αναντιστοιχία δημιούργησε συστηματικές ορθογραφικές λύσεις. Αυτοί οι 10 κανόνες είναι <strong>απαραίτητοι</strong> για την ανάγνωση.',
+    th_case:'Πτώση',th_fn:'Λειτουργία',th_lb:'Γραμμική Β',th_signs:'Σημεία',th_rec:'Ανακατασκευή',
+    th_val:'Μεταγραφή',th_meaning:'Σημασία',th_att:'',
+    wanax_title:'wanax — "βασιλιάς" (3η κλίση, θέμα σε σύμφωνο wanakt-)',
+    doero_title:'do-e-ro — "δούλος" (2η κλίση αρσ. θέμα σε -ο)',
+    sito_title:'si-to — "σιτάρι" (2η κλίση ουδ. θέμα σε -ο)',
+  },
+};
 
-const DECL_DATA={
-  wanax:{title:'wanax — "king" (3rd decl. consonant stem wanakt-)',rows:[
-    ['Nominative','wa-na-ka','𐀷𐀙𐀏','wanaks','★ attested'],
-    ['Genitive','wa-na-ka-to','𐀷𐀙𐀏𐀵','wanaktos','★ attested'],
-    ['Dative','wa-na-ka-te','𐀷𐀙𐀏𐀳','wanaktei','★ attested'],
-    ['Accusative','wa-na-ka-ta','𐀷𐀙𐀏𐀲','wanakta','reconstructed'],
-    ['Adjective','wa-na-ka-te-ro','𐀷𐀙𐀏𐀳𐀫','wanakteros ("of the king")','★ attested'],
+const DECL_DATA = {
+  wanax:{rows:[
+    ['Nominative / Ονομαστική','wa-na-ka','𐀷𐀙𐀏','wanaks','★'],
+    ['Genitive / Γενική','wa-na-ka-to','𐀷𐀙𐀏𐀵','wanaktos','★'],
+    ['Dative / Δοτική','wa-na-ka-te','𐀷𐀙𐀏𐀳','wanaktei','★'],
+    ['Accusative / Αιτιατική','wa-na-ka-ta','𐀷𐀙𐀏𐀲','wanakta','reconstr.'],
+    ['Adjective / Επίθετο','wa-na-ka-te-ro','𐀷𐀙𐀏𐀳𐀫','wanakteros','★'],
   ]},
-  doero:{title:'do-e-ro — "slave" (2nd decl. masc. o-stem)',rows:[
-    ['Nominative','do-e-ro','𐀈𐀁𐀫','doelos','★'],
-    ['Genitive','do-e-ro-jo','𐀈𐀁𐀫𐀍','doelojo','★'],
-    ['Dative','do-e-ro-i','𐀈𐀁𐀫𐀂','doeloi','reconstructed'],
-    ['Female nom.','do-e-ra','𐀈𐀁𐀨','doelā (female slave)','★'],
+  doero:{rows:[
+    ['Nominative / Ονομαστική','do-e-ro','𐀈𐀁𐀫','doelos','★'],
+    ['Genitive / Γενική','do-e-ro-jo','𐀈𐀁𐀫𐀍','doelojo','★'],
+    ['Dative / Δοτική','do-e-ro-i','𐀈𐀁𐀫𐀂','doeloi','reconstr.'],
+    ['Female / Θηλυκό','do-e-ra','𐀈𐀁𐀨','doelā','★'],
   ]},
-  sito:{title:'si-to — "grain" (2nd decl. neuter o-stem)',rows:[
-    ['Nominative','si-to','𐀯𐀵','sitos','★'],
-    ['Genitive','si-to-jo','𐀯𐀵𐀍','sitojo','attested'],
-    ['Acc. plural','si-ta','𐀯𐀲','sita','★'],
-    ['With total','to-so si-to','𐀵𐀰 𐀯𐀵','tosos sitos = "so much grain"','★ hundreds of tablets'],
+  sito:{rows:[
+    ['Nominative / Ονομαστική','si-to','𐀯𐀵','sitos','★'],
+    ['Genitive / Γενική','si-to-jo','𐀯𐀵𐀍','sitojo','attested'],
+    ['Acc. pl. / Αιτ. πληθ.','si-ta','𐀯𐀲','sita','★'],
+    ['With total / Με σύνολο','to-so si-to','𐀵𐀰 𐀯𐀵','tosos sitos = "so much grain"','★'],
   ]},
 };
 
-const VERBS=[
-  {lb:'e-ko',signs:'𐀁𐀏',rec:'ekhō / ekhei',meaning:'to have / he has',att:'★'},
-  {lb:'do-ke',signs:'𐀈𐀐',rec:'dōke',meaning:'he gave (no augment)',att:'★'},
-  {lb:'a-pe-do-ke',signs:'𐀀𐀟𐀈𐀐',rec:'apedōke',meaning:'delivered / gave back',att:'★ only augmented form'},
-  {lb:'we-ke',signs:'𐀸𐀐',rec:'wergei',meaning:'works on, makes',att:'★'},
-  {lb:'jo-a-se-so-si',signs:'𐀍𐀀𐀮𐀰𐀯',rec:'hō asēsonsi',meaning:'thus will they fatten (future 3pl.)',att:'★ PY Cn 608'},
-  {lb:'e-re-u-te-ro',signs:'𐀁𐀩𐀄𐀳𐀫',rec:'eleutheros',meaning:'free (status adjective)',att:'★'},
+const VERBS = [
+  {lb:'e-ko',signs:'𐀁𐀏',rec:'ekhō / ekhei',meaning:{en:'to have / he has',fr:'avoir / il a',gr:'έχω / έχει'},att:'★'},
+  {lb:'do-ke',signs:'𐀈𐀐',rec:'dōke',meaning:{en:'he gave (no augment)',fr:'il donna (sans augment)',gr:'έδωσε (χωρίς αύξηση)'},att:'★'},
+  {lb:'a-pe-do-ke',signs:'𐀀𐀟𐀈𐀐',rec:'apedōke',meaning:{en:'delivered / gave back',fr:'livra / rendit',gr:'παρέδωσε / απέδωσε'},att:'★ only augmented form'},
+  {lb:'we-ke',signs:'𐀸𐀐',rec:'wergei',meaning:{en:'works on, makes',fr:'travaille sur, fabrique',gr:'εργάζεται, φτιάχνει'},att:'★'},
+  {lb:'jo-a-se-so-si',signs:'𐀍𐀀𐀮𐀰𐀯',rec:'hō asēsonsi',meaning:{en:'thus will they fatten (future 3pl.)',fr:'ainsi engraisseront-ils (futur 3pl.)',gr:'έτσι θα παχύνουν (μέλλ. γ΄ πληθ.)'},att:'★ PY Cn 608'},
 ];
 
-const PARTICLES=[
-  {lb:'to-so',signs:'𐀵𐀰',fn:'"so much/many" (tosos) — introduces a total. Most common tally word.'},
-  {lb:'to-so-de',signs:'𐀵𐀰𐀆',fn:'"and so many" — running total with connective -de'},
-  {lb:'pa-ro',signs:'𐀞𐀫',fn:'"from, in the charge of" (para) — common header before a name'},
-  {lb:'o-pi',signs:'𐀃𐀠',fn:'"in addition to" (epi) — used with quantities'},
-  {lb:'we-ke',signs:'𐀸𐀐',fn:'"works on, makes" (wergei) — craftsman formula'},
-  {lb:'e-ko',signs:'𐀁𐀏',fn:'"has/holds" (ekhei) — possession formula'},
-  {lb:'do-ke',signs:'𐀈𐀐',fn:'"gave" (dōke) — past delivery formula (no augment)'},
-  {lb:'a-pe-do-ke',signs:'𐀀𐀟𐀈𐀐',fn:'"delivered, gave back" — the only augmented verb form in the corpus'},
+const PARTICLES = [
+  {lb:'to-so',signs:'𐀵𐀰',fn:{en:'"so much/many" — introduces totals',fr:'"autant" — introduit les totaux',gr:'"τόσο/τόσα" — εισάγει σύνολα'}},
+  {lb:'to-so-de',signs:'𐀵𐀰𐀆',fn:{en:'"and so many" — running total with connective',fr:'"et autant" — total courant avec connecteur',gr:'"και τόσα" — τρέχον σύνολο με σύνδεσμο'}},
+  {lb:'pa-ro',signs:'𐀞𐀫',fn:{en:'"from, in the charge of" (para)',fr:'"de, sous la responsabilité de" (para)',gr:'"από, υπό την ευθύνη" (para)'}},
+  {lb:'o-pi',signs:'𐀃𐀠',fn:{en:'"in addition to" (epi)',fr:'"en plus de" (epi)',gr:'"επιπλέον" (epi)'}},
+  {lb:'we-ke',signs:'𐀸𐀐',fn:{en:'"works on, makes" (wergei) — craftsman formula',fr:'"travaille sur, fabrique" — formule artisanale',gr:'"εργάζεται" — φόρμουλα τεχνιτών'}},
+  {lb:'e-ko',signs:'𐀁𐀏',fn:{en:'"has/holds" (ekhei) — possession formula',fr:'"a/détient" — formule de possession',gr:'"έχει/κατέχει" — φόρμουλα κατοχής'}},
+  {lb:'do-ke',signs:'𐀈𐀐',fn:{en:'"gave" (dōke) — past delivery (no augment)',fr:'"donna" — livraison passée (sans augment)',gr:'"έδωσε" — παράδοση παρελθόντος (χωρίς αύξηση)'}},
+  {lb:'a-pe-do-ke',signs:'𐀀𐀟𐀈𐀐',fn:{en:'"delivered back" — only augmented verb form in corpus',fr:'"rendit" — seule forme verbale augmentée du corpus',gr:'"απέδωσε" — η μόνη αυξημένη μορφή ρήματος στο σώμα'}},
 ];
 
-function renderCases(){
-  return `<div class="panel"><p>Mycenaean Greek had <strong>5 cases</strong> — nominative, accusative, genitive, dative-locative, and instrumental. Because Linear B drops final consonants, cases are often visually similar — context and ideograms disambiguate. Source: Ventris & Chadwick, <em>Documents in Mycenaean Greek</em>.</p></div>
-  <table><tr><th>Case</th><th>Function</th><th>Linear B</th><th>Signs</th><th>Reconstructed</th></tr>
-  ${GRAMMAR.cases.map(r=>`<tr><td><strong>${r.case}</strong></td><td>${r.fn}</td><td><code>${r.lb}</code></td><td><span class="sign-md">${r.signs}</span></td><td>${r.rec} <span class="attested">${r.att}</span></td></tr>`).join('')}
+const S = STRINGS[LANG] || STRINGS.en;
+
+function renderCases() {
+  return `<div class="panel"><p>${S.cases_intro}</p></div>
+  <table>
+    <tr><th>${S.th_case}</th><th>${S.th_fn}</th><th>${S.th_lb}</th><th>${S.th_signs}</th><th>${S.th_rec}</th></tr>
+    ${GRAMMAR.cases.map(r => `<tr>
+      <td><strong>${tF(r.case)}</strong></td>
+      <td>${tF(r.fn)}</td>
+      <td><code>${r.lb}</code></td>
+      <td><span class="sign-md">${r.signs}</span></td>
+      <td>${r.rec} <span class="attested">${typeof r.att === 'object' ? tF(r.att) : r.att}</span></td>
+    </tr>`).join('')}
   </table>`;
 }
 
-function renderDecl(){
-  const tabs=['wanax','doero','sito'];
-  const tabBtns=tabs.map((id,i)=>`<button class="gram-tab${i===0?' active':''}" onclick="switchDecl('${id}',this)">${DECL_DATA[id].title.split('—')[0].trim()}</button>`).join('');
+function renderDecl() {
+  const tabs = [
+    {id:'wanax',label:S.wanax_title},
+    {id:'doero',label:S.doero_title},
+    {id:'sito',label:S.sito_title},
+  ];
+  const tabBtns = tabs.map((t,i) =>
+    `<button class="gram-tab${i===0?' active':''}" onclick="switchDecl('${t.id}',this)">${t.label.split('—')[0].trim()}</button>`
+  ).join('');
   return `<div class="gram-tabs" id="decl-tabs" style="margin-bottom:.75rem">${tabBtns}</div>
-  <div id="decl-content"></div>
-  <div class="panel"><p><span class="attested">★</span> = directly attested on tablets. Others reconstructed from spelling rules and comparative Greek. Source: Tentative Grammar §19–23.</p></div>`;
+    <div id="decl-content"></div>
+    <div class="panel"><p>${S.decl_intro}</p></div>`;
 }
 
-function switchDecl(id,btn){
-  document.querySelectorAll('#decl-tabs .gram-tab').forEach(b=>b.classList.remove('active'));
+function switchDecl(id, btn) {
+  document.querySelectorAll('#decl-tabs .gram-tab').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  const d=DECL_DATA[id];
-  document.getElementById('decl-content').innerHTML=`
-    <div style="font-size:.9rem;font-weight:600;color:var(--clay-light);margin-bottom:.75rem">${d.title}</div>
-    <table><tr><th>Case</th><th>Transliteration</th><th>Signs</th><th>Reconstructed</th><th></th></tr>
-    ${d.rows.map(r=>`<tr><td>${r[0]}</td><td><code>${r[1]}</code></td><td><span class="sign-md">${r[2]}</span></td><td style="color:var(--ink-dim)">${r[3]}</td><td><span class="${r[4].startsWith('★')?'attested':'small muted'}">${r[4]}</span></td></tr>`).join('')}
+  const d = DECL_DATA[id];
+  const title = S[id + '_title'] || id;
+  document.getElementById('decl-content').innerHTML = `
+    <div style="font-size:.9rem;font-weight:600;color:var(--clay-light);margin-bottom:.75rem">${title}</div>
+    <table>
+      <tr><th>${S.th_case}</th><th>${S.th_lb}</th><th>${S.th_signs}</th><th>${S.th_rec}</th><th></th></tr>
+      ${d.rows.map(r => `<tr>
+        <td>${r[0]}</td>
+        <td><code>${r[1]}</code></td>
+        <td><span class="sign-md">${r[2]}</span></td>
+        <td style="color:var(--ink-dim)">${r[3]}</td>
+        <td><span class="${r[4].startsWith('★') ? 'attested' : 'small muted'}">${r[4]}</span></td>
+      </tr>`).join('')}
     </table>`;
 }
 
-function renderVerbs(){
-  return `<div class="panel"><p>Verbs are poorly represented — tablets are administrative records, not literature. The past-tense augment (e- prefix) is <strong>almost entirely absent</strong>. Only one augmented form exists in the entire corpus: <code>a-pe-do-ke</code>.</p></div>
-  <table><tr><th>Signs</th><th>Linear B</th><th>Reconstructed</th><th>Meaning</th><th></th></tr>
-  ${VERBS.map(v=>`<tr><td><span class="sign-md">${v.signs}</span></td><td><code>${v.lb}</code></td><td>${v.rec}</td><td>${v.meaning}</td><td><span class="attested">${v.att}</span></td></tr>`).join('')}
+function renderVerbs() {
+  return `<div class="panel"><p>${S.verbs_intro}</p></div>
+  <table>
+    <tr><th>${S.th_signs}</th><th>${S.th_lb}</th><th>Reconstructed</th><th>${S.th_meaning}</th><th></th></tr>
+    ${VERBS.map(v => `<tr>
+      <td><span class="sign-md">${v.signs}</span></td>
+      <td><code>${v.lb}</code></td>
+      <td>${v.rec}</td>
+      <td>${tF(v.meaning)}</td>
+      <td><span class="attested">${v.att}</span></td>
+    </tr>`).join('')}
   </table>`;
 }
 
-function renderParticles(){
-  return `<div class="panel"><p>These short words recur across hundreds of tablets. Recognising them lets you parse an unfamiliar tablet quickly — even before you can read the content words.</p></div>
-  <table><tr><th>Signs</th><th>Linear B</th><th>Meaning / Function</th></tr>
-  ${PARTICLES.map(p=>`<tr><td><span class="sign-md">${p.signs}</span></td><td><code>${p.lb}</code></td><td>${p.fn}</td></tr>`).join('')}
+function renderParticles() {
+  return `<div class="panel"><p>${S.particles_intro}</p></div>
+  <table>
+    <tr><th>${S.th_signs}</th><th>${S.th_lb}</th><th>${S.th_meaning}</th></tr>
+    ${PARTICLES.map(p => `<tr>
+      <td><span class="sign-md">${p.signs}</span></td>
+      <td><code>${p.lb}</code></td>
+      <td>${tF(p.fn)}</td>
+    </tr>`).join('')}
   </table>`;
 }
 
-function renderScribal(){
-  return `<div class="panel"><p>Linear B was adapted from Linear A (a non-Greek script). This mismatch created systematic spelling workarounds. These 10 rules are <strong>essential</strong> to reading. Sources: Wikipedia Linear B; Ventris & Chadwick <em>Documents</em>.</p></div>
-  <div class="rules-grid">${SCRIBAL_RULES.map(r=>`<div class="rule-card"><strong>${r.n}. ${r.title}</strong><p>${r.body}</p><span class="ex">${r.ex}</span></div>`).join('')}</div>`;
+function renderScribal() {
+  return `<div class="panel"><p>${S.scribal_intro}</p></div>
+  <div class="rules-grid">
+    ${SCRIBAL_RULES.map(r => `
+      <div class="rule-card">
+        <strong>${r.n}. ${tF(r.title)}</strong>
+        <p>${tF(r.body)}</p>
+        <span class="ex">${r.ex}</span>
+      </div>`).join('')}
+  </div>`;
 }
 
-const RENDERS={cases:renderCases,decl:renderDecl,verbs:renderVerbs,particles:renderParticles,scribal:renderScribal};
+const TAB_KEYS = ['cases','decl','verbs','particles','scribal'];
+const RENDERS = { cases:renderCases, decl:renderDecl, verbs:renderVerbs, particles:renderParticles, scribal:renderScribal };
 
-function showGram(key,btn){
-  document.querySelectorAll('#gram-tab-bar .gram-tab').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('gram-content').innerHTML=RENDERS[key]();
-  if(key==='decl') switchDecl('wanax',document.querySelector('#decl-tabs .gram-tab'));
-}
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('pg-title').textContent = S.title;
+  document.getElementById('pg-sub').textContent = S.sub;
 
-document.addEventListener('DOMContentLoaded',()=>{
-  const bar=document.getElementById('gram-tab-bar');
-  GRAM_TABS.forEach((tab,i)=>{
-    const b=document.createElement('button');
-    b.className='gram-tab'+(i===0?' active':'');
-    b.textContent=tab.label[LANG]||tab.label.en;
-    b.addEventListener('click',()=>showGram(tab.key,b));
+  const bar = document.getElementById('gram-tab-bar');
+  TAB_KEYS.forEach((key, i) => {
+    const b = document.createElement('button');
+    b.className = 'gram-tab' + (i === 0 ? ' active' : '');
+    b.textContent = t('tab_' + key);
+    b.addEventListener('click', () => showGram(key, b));
     bar.appendChild(b);
   });
-  showGram('cases',bar.querySelector('.gram-tab'));
+  showGram('cases', bar.querySelector('.gram-tab'));
 });
+
+function showGram(key, btn) {
+  document.querySelectorAll('#gram-tab-bar .gram-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('gram-content').innerHTML = RENDERS[key]();
+  if (key === 'decl') switchDecl('wanax', document.querySelector('#decl-tabs .gram-tab'));
+}
 </script>
 </body>
 </html>
