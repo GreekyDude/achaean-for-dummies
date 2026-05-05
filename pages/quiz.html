@@ -10,8 +10,8 @@
 <main class="page">
   <div class="page-hero">
     <div class="section-title">Practice</div>
-    <h1>Quiz</h1>
-    <p class="subtitle">Three modes to build recognition of Linear B signs and words</p>
+    <h1 id="pg-title">Quiz</h1>
+    <p class="subtitle" id="pg-sub">Three modes to build recognition of Linear B signs and words</p>
   </div>
   <div class="quiz-mode-bar" id="mode-bar"></div>
   <div class="quiz-wrap">
@@ -20,128 +20,236 @@
       <div class="quiz-prompt" id="q-prompt"></div>
     </div>
     <div class="quiz-score-row">
-      <div class="score-block"><div class="score-val" id="q-correct">0</div><div class="score-label" id="ql-correct">Correct</div></div>
-      <div class="score-block"><div class="score-val" id="q-total">0</div><div class="score-label" id="ql-total">Total</div></div>
-      <div class="score-block"><div class="score-val" id="q-streak">0</div><div class="score-label" id="ql-streak">Streak</div></div>
+      <div class="score-block"><div class="score-val" id="q-correct">0</div><div class="score-label" id="ql-correct"></div></div>
+      <div class="score-block"><div class="score-val" id="q-total">0</div><div class="score-label" id="ql-total"></div></div>
+      <div class="score-block"><div class="score-val" id="q-streak">0</div><div class="score-label" id="ql-streak"></div></div>
     </div>
     <div class="streak-dots" id="streak-dots"></div>
     <div class="quiz-options" id="q-options"></div>
     <div class="quiz-feedback" id="q-feedback"></div>
-    <button class="btn btn-primary" onclick="nextQ()" id="next-btn">Next →</button>
+    <button class="btn btn-primary" onclick="nextQ()" id="next-btn"></button>
   </div>
-  <div class="panel mt3">
-    <h3>Tips</h3>
-    <p>Start with <strong>Sign → Syllable</strong> to build recognition. Once you know the five vowels (a, e, i, o, u) and common series (t, k, n, p, wa), move to <strong>Read a Word</strong>. The q-series and z-series are easy to confuse with similar-looking signs.</p>
-  </div>
+  <div class="panel mt3" id="tips-panel"></div>
 </main>
 <footer><span class="signs">𐀷𐀙𐀏 𐀯𐀵 𐀏𐀏 𐀴𐀪𐀡</span>Linear B Mycenaean Script Reference</footer>
 <script src="../js/data.js"></script>
 <script src="../js/nav.js"></script>
 <script>
-const SE=Object.entries(SIGNS);
-const WQ=[
-  {signs:'𐀷𐀙𐀏',word:'wa-na-ka',meaning:'king (wanax)'},
-  {signs:'𐀯𐀵',word:'si-to',meaning:'grain (sitos)'},
-  {signs:'𐀏𐀏',word:'ka-ko',meaning:'bronze (khalkos)'},
-  {signs:'𐀕𐀪',word:'me-ri',meaning:'honey (meli)'},
-  {signs:'𐀳𐀃',word:'te-o',meaning:'god (theos)'},
-  {signs:'𐀞𐀳',word:'pa-te',meaning:'father (patēr)'},
-  {signs:'𐀴𐀪𐀡',word:'ti-ri-po',meaning:'tripod'},
-  {signs:'𐀢𐀫',word:'pu-ro',meaning:'Pylos'},
-  {signs:'𐀣𐀯𐀩𐀄',word:'qa-si-re-u',meaning:'chieftain → basileus'},
-  {signs:'𐀈𐀁𐀫',word:'do-e-ro',meaning:'slave (doelos)'},
-  {signs:'𐀓𐀬𐀰',word:'ku-ru-so',meaning:'gold (khrusos)'},
-  {signs:'𐀒𐀜𐀰',word:'ko-no-so',meaning:'Knossos'},
-  {signs:'𐀤𐀷𐀐𐀲',word:'ra-wa-ke-ta',meaning:'army leader'},
-  {signs:'𐀵𐀰',word:'to-so',meaning:'total (tosos)'},
-  {signs:'𐀁𐀨𐀺',word:'e-ra-wo',meaning:'olive oil'},
-  {signs:'𐀅𐀔',word:'da-mo',meaning:'community (dāmos)'},
-  {signs:'𐀇𐀸',word:'di-we',meaning:'Zeus (dative)'},
-];
+const STRINGS = {
+  en:{title:'Quiz',sub:'Three modes to build recognition of Linear B signs and words',
+    m0:'Sign → Syllable',m1:'Syllable → Sign',m2:'Read a Word',
+    q0:'What syllable does this sign represent?',
+    q1:'Which sign represents this syllable?',
+    q2:'What word do these signs spell?',
+    tips:'<h3>Tips</h3><p>Start with <strong>Sign → Syllable</strong> to build recognition. Once you know the five vowels (a, e, i, o, u) and common series (t, k, n, p, wa), move to <strong>Read a Word</strong>. The q-series and z-series are easy to confuse.</p>'},
+  fr:{title:'Quiz',sub:'Trois modes pour développer la reconnaissance des signes et des mots',
+    m0:'Signe → Syllabe',m1:'Syllabe → Signe',m2:'Lire un mot',
+    q0:'Quelle syllabe ce signe représente-t-il ?',
+    q1:'Quel signe représente cette syllabe ?',
+    q2:'Quel mot ces signes épellent-ils ?',
+    tips:'<h3>Conseils</h3><p>Commencez avec <strong>Signe → Syllabe</strong>. Une fois les cinq voyelles (a, e, i, o, u) connues, passez à <strong>Lire un mot</strong>. Les séries q et z sont faciles à confondre.</p>'},
+  gr:{title:'Κουίζ',sub:'Τρεις λειτουργίες για την ανάπτυξη αναγνώρισης σημείων και λέξεων',
+    m0:'Σημείο → Συλλαβή',m1:'Συλλαβή → Σημείο',m2:'Διάβασε μια λέξη',
+    q0:'Ποια συλλαβή αντιπροσωπεύει αυτό το σημείο;',
+    q1:'Ποιο σημείο αντιπροσωπεύει αυτή τη συλλαβή;',
+    q2:'Ποια λέξη σχηματίζουν αυτά τα σημεία;',
+    tips:'<h3>Συμβουλές</h3><p>Ξεκινήστε με <strong>Σημείο → Συλλαβή</strong>. Μόλις μάθετε τα πέντε φωνήεντα, περάστε στο <strong>Διάβασε μια λέξη</strong>. Οι σειρές q και z μπερδεύονται εύκολα.</p>'},
+};
 
-let qMode='sign2val',qScore=0,qTotal=0,qStreak=0,qHistory=[],qLocked=false,qCurrent=null;
+const SE = Object.entries(SIGNS);
+const WQ = DECODE_WORDS.slice(0, 16);
 
-document.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('ql-correct').textContent=t('correct');
-  document.getElementById('ql-total').textContent=t('total');
-  document.getElementById('ql-streak').textContent=t('streak');
-  document.getElementById('next-btn').textContent=t('next');
-  const bar=document.getElementById('mode-bar');
-  const modes=[
-    {id:'sign2val',label:{en:'Sign → Syllable',fr:'Signe → Syllabe',gr:'Σημείο → Συλλαβή'}},
-    {id:'val2sign',label:{en:'Syllable → Sign',fr:'Syllabe → Signe',gr:'Συλλαβή → Σημείο'}},
-    {id:'word',label:{en:'Read a Word',fr:'Lire un mot',gr:'Διαβάστε μια λέξη'}},
+let qMode = 'sign2val', qScore = 0, qTotal = 0, qStreak = 0, qHistory = [], qLocked = false, qCurrent = null;
+const S = STRINGS[LANG] || STRINGS.en;
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('pg-title').textContent = S.title;
+  document.getElementById('pg-sub').textContent = S.sub;
+  document.getElementById('ql-correct').textContent = t('correct');
+  document.getElementById('ql-total').textContent = t('total');
+  document.getElementById('ql-streak').textContent = t('streak');
+  document.getElementById('next-btn').textContent = t('next');
+  document.getElementById('tips-panel').innerHTML = S.tips;
+
+  const bar = document.getElementById('mode-bar');
+  const modes = [
+    {id:'sign2val', label:S.m0},
+    {id:'val2sign', label:S.m1},
+    {id:'word',     label:S.m2},
   ];
-  modes.forEach((m,i)=>{
-    const b=document.createElement('button');
-    b.className='qm-btn'+(i===0?' active':'');
-    b.textContent=m.label[LANG]||m.label.en;
-    b.addEventListener('click',()=>{qMode=m.id;qScore=0;qTotal=0;qStreak=0;qHistory=[];updateScore();document.getElementById('streak-dots').innerHTML='';document.querySelectorAll('.qm-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');nextQ();});
+  modes.forEach((m, i) => {
+    const b = document.createElement('button');
+    b.className = 'qm-btn' + (i === 0 ? ' active' : '');
+    b.textContent = m.label;
+    b.addEventListener('click', () => {
+      qMode = m.id; qScore = 0; qTotal = 0; qStreak = 0; qHistory = [];
+      updateScore();
+      document.getElementById('streak-dots').innerHTML = '';
+      document.getElementById('q-feedback').textContent = '';
+      document.querySelectorAll('.qm-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      nextQ();
+    });
     bar.appendChild(b);
   });
   nextQ();
 });
 
-function nextQ(){
-  qLocked=false;
-  document.getElementById('q-feedback').textContent='';
-  const od=document.getElementById('q-options'); od.innerHTML='';
-  if(qMode==='sign2val'){
-    qCurrent=shuffle(SE)[0];
-    document.getElementById('q-display').textContent=qCurrent[1];
-    document.getElementById('q-display').style.fontSize='5rem';
-    document.getElementById('q-prompt').textContent='What syllable does this sign represent?';
-    const wrong=shuffle(SE.filter(e=>e[0]!==qCurrent[0])).slice(0,3).map(e=>e[0]);
-    shuffle([qCurrent[0],...wrong]).forEach(o=>{
-      const b=makeOpt(o,()=>ans(o===qCurrent[0],b,`✓ ${qCurrent[1]} = ${qCurrent[0]}`,`✗ It's "${qCurrent[0]}". ${(SIGN_DETAILS.find(s=>s.val===qCurrent[0])||{note:''}).note.split('.')[0]}.`));
+function nextQ() {
+  qLocked = false;
+  document.getElementById('q-feedback').textContent = '';
+  const od = document.getElementById('q-options'); od.innerHTML = '';
+
+  if (qMode === 'sign2val') {
+    qCurrent = shuffle(SE)[0];
+    document.getElementById('q-display').textContent = qCurrent[1];
+    document.getElementById('q-display').style.fontSize = '5rem';
+    document.getElementById('q-prompt').textContent = S.q0;
+    const wrong = shuffle(SE.filter(e => e[0] !== qCurrent[0])).slice(0,3).map(e => e[0]);
+    shuffle([qCurrent[0], ...wrong]).forEach(o => {
+      const detail = SIGN_DETAILS.find(s => s.val === qCurrent[0]);
+      const note = detail ? tF(detail.note).split('.')[0] : '';
+      od.appendChild(makeOpt(o, () => ans(o === qCurrent[0],
+        `✓ ${qCurrent[1]} = ${qCurrent[0]}`,
+        `✗ "${qCurrent[0]}". ${note}.`
+      )));
+    });
+  } else if (qMode === 'val2sign') {
+    qCurrent = shuffle(SE)[0];
+    document.getElementById('q-display').textContent = qCurrent[0];
+    document.getElementById('q-display').style.fontSize = '2rem';
+    document.getElementById('q-prompt').textContent = S.q1;
+    const wrong = shuffle(SE.filter(e => e[0] !== qCurrent[0])).slice(0,3).map(e => e[1]);
+    shuffle([qCurrent[1], ...wrong]).forEach(o => {
+      od.appendChild(makeOpt(o, () => ans(o === qCurrent[1],
+        `✓ ${qCurrent[0]} = ${qCurrent[1]}`,
+        `✗ ${qCurrent[1]}`
+      ), '2rem'));
+    });
+  } else {
+    qCurrent = shuffle(WQ)[0];
+    document.getElementById('q-display').textContent = word(qCurrent.sylls);
+    document.getElementById('q-display').style.fontSize = '3rem';
+    document.getElementById('q-prompt').textContent = S.q2;
+    const wrong = shuffle(WQ.filter(w => w.translit !== qCurrent.translit)).slice(0,3).map(w => w.translit);
+    shuffle([qCurrent.translit, ...wrong]).forEach(o => {
+      od.appendChild(makeOpt(o, () => ans(o === qCurrent.translit,
+        `✓ ${qCurrent.translit} = ${tF(qCurrent.meaning)}`,
+        `✗ "${qCurrent.translit}" = ${tF(qCurrent.meaning)}`
+      ), '0.85rem'));
+    });
+  }
+}
+
+function makeOpt(label, onClick, fs) {
+  const b = document.createElement('button');
+  b.className = 'quiz-opt'; b.textContent = label;
+  if (fs) b.style.fontSize = fs;
+  b.addEventListener('click', onClick);
+  return b;
+}
+
+function ans(correct, okMsg, badMsg) {
+  if (qLocked) return; qLocked = true; qTotal++;
+  const opts = document.querySelectorAll('.quiz-opt');
+  if (correct) {
+    qScore++; qStreak++;
+    opts.forEach(b => { if (b.classList.contains('quiz-opt') && document.activeElement === b) b.classList.add('correct'); });
+    // Mark the clicked one
+    event && event.target && event.target.classList.add('correct');
+    document.getElementById('q-feedback').textContent = okMsg;
+    qHistory.push(1);
+  } else {
+    qStreak = 0;
+    event && event.target && event.target.classList.add('wrong');
+    document.getElementById('q-feedback').textContent = badMsg;
+    qHistory.push(0);
+  }
+  updateScore();
+}
+
+// Override ans to receive button reference directly
+function makeOpt(label, onClickFn, fs) {
+  const b = document.createElement('button');
+  b.className = 'quiz-opt'; b.textContent = label;
+  if (fs) b.style.fontSize = fs;
+  b.addEventListener('click', () => {
+    if (qLocked) return; qLocked = true; qTotal++;
+    const correct = onClickFn();
+    updateScore();
+  });
+  return b;
+}
+
+// Rebuild with correct pattern
+function nextQ() {
+  qLocked = false;
+  document.getElementById('q-feedback').textContent = '';
+  const od = document.getElementById('q-options'); od.innerHTML = '';
+
+  if (qMode === 'sign2val') {
+    qCurrent = shuffle(SE)[0];
+    document.getElementById('q-display').textContent = qCurrent[1];
+    document.getElementById('q-display').style.fontSize = '5rem';
+    document.getElementById('q-prompt').textContent = S.q0;
+    const wrong = shuffle(SE.filter(e => e[0] !== qCurrent[0])).slice(0,3).map(e => e[0]);
+    shuffle([qCurrent[0], ...wrong]).forEach(o => {
+      const b = document.createElement('button'); b.className = 'quiz-opt'; b.textContent = o;
+      b.addEventListener('click', () => doAns(o === qCurrent[0], b,
+        `✓ ${qCurrent[1]} = ${qCurrent[0]}`,
+        `✗ It's "${qCurrent[0]}"`));
       od.appendChild(b);
     });
-  } else if(qMode==='val2sign'){
-    qCurrent=shuffle(SE)[0];
-    document.getElementById('q-display').textContent=qCurrent[0];
-    document.getElementById('q-display').style.fontSize='2rem';
-    document.getElementById('q-prompt').textContent='Which sign represents this syllable?';
-    const wrong=shuffle(SE.filter(e=>e[0]!==qCurrent[0])).slice(0,3).map(e=>e[1]);
-    shuffle([qCurrent[1],...wrong]).forEach(o=>{
-      const b=makeOpt(o,()=>ans(o===qCurrent[1],b,`✓ ${qCurrent[0]} = ${qCurrent[1]}`,`✗ The sign is ${qCurrent[1]}.`),'2rem');
+  } else if (qMode === 'val2sign') {
+    qCurrent = shuffle(SE)[0];
+    document.getElementById('q-display').textContent = qCurrent[0];
+    document.getElementById('q-display').style.fontSize = '2rem';
+    document.getElementById('q-prompt').textContent = S.q1;
+    const wrong = shuffle(SE.filter(e => e[0] !== qCurrent[0])).slice(0,3).map(e => e[1]);
+    shuffle([qCurrent[1], ...wrong]).forEach(o => {
+      const b = document.createElement('button'); b.className = 'quiz-opt'; b.textContent = o; b.style.fontSize = '2rem';
+      b.addEventListener('click', () => doAns(o === qCurrent[1], b,
+        `✓ ${qCurrent[0]} = ${qCurrent[1]}`,
+        `✗ ${qCurrent[1]}`));
       od.appendChild(b);
     });
   } else {
-    qCurrent=shuffle(WQ)[0];
-    document.getElementById('q-display').textContent=qCurrent.signs;
-    document.getElementById('q-display').style.fontSize='3rem';
-    document.getElementById('q-prompt').textContent='What word do these signs spell?';
-    const wrong=shuffle(WQ.filter(w=>w.word!==qCurrent.word)).slice(0,3).map(w=>w.word);
-    shuffle([qCurrent.word,...wrong]).forEach(o=>{
-      const b=makeOpt(o,()=>ans(o===qCurrent.word,b,`✓ ${qCurrent.word} = ${qCurrent.meaning}`,`✗ It's "${qCurrent.word}" = ${qCurrent.meaning}`),'0.85rem');
+    qCurrent = shuffle(WQ)[0];
+    document.getElementById('q-display').textContent = word(qCurrent.sylls);
+    document.getElementById('q-display').style.fontSize = '3rem';
+    document.getElementById('q-prompt').textContent = S.q2;
+    const wrong = shuffle(WQ.filter(w => w.translit !== qCurrent.translit)).slice(0,3).map(w => w.translit);
+    shuffle([qCurrent.translit, ...wrong]).forEach(o => {
+      const b = document.createElement('button'); b.className = 'quiz-opt'; b.textContent = o; b.style.fontSize = '.85rem';
+      b.addEventListener('click', () => doAns(o === qCurrent.translit, b,
+        `✓ ${qCurrent.translit} = ${tF(qCurrent.meaning)}`,
+        `✗ "${qCurrent.translit}" = ${tF(qCurrent.meaning)}`));
       od.appendChild(b);
     });
   }
 }
 
-function makeOpt(label,onClick,fs){
-  const b=document.createElement('button');
-  b.className='quiz-opt'; b.textContent=label;
-  if(fs)b.style.fontSize=fs;
-  b.addEventListener('click',onClick);
-  return b;
-}
-
-function ans(correct,btn,okMsg,badMsg){
-  if(qLocked)return; qLocked=true; qTotal++;
-  if(correct){qScore++;qStreak++;btn.classList.add('correct');document.getElementById('q-feedback').textContent=okMsg;qHistory.push(1);}
-  else{qStreak=0;btn.classList.add('wrong');document.getElementById('q-feedback').textContent=badMsg;
-    const target=qMode==='sign2val'?qCurrent[0]:qMode==='val2sign'?qCurrent[1]:qCurrent.word;
-    document.querySelectorAll('.quiz-opt').forEach(b=>{if(b.textContent===target)b.classList.add('correct');});
-    qHistory.push(0);}
+function doAns(correct, btn, okMsg, badMsg) {
+  if (qLocked) return; qLocked = true; qTotal++;
+  if (correct) {
+    qScore++; qStreak++; btn.classList.add('correct');
+    document.getElementById('q-feedback').textContent = okMsg; qHistory.push(1);
+  } else {
+    qStreak = 0; btn.classList.add('wrong');
+    document.getElementById('q-feedback').textContent = badMsg;
+    const target = qMode === 'sign2val' ? qCurrent[0] : qMode === 'val2sign' ? qCurrent[1] : qCurrent.translit;
+    document.querySelectorAll('.quiz-opt').forEach(b => { if (b.textContent === target) b.classList.add('correct'); });
+    qHistory.push(0);
+  }
   updateScore();
 }
 
-function updateScore(){
-  document.getElementById('q-correct').textContent=qScore;
-  document.getElementById('q-total').textContent=qTotal;
-  document.getElementById('q-streak').textContent=qStreak;
-  document.getElementById('streak-dots').innerHTML=qHistory.slice(-20).map(h=>`<div class="streak-dot ${h?'hit':'miss'}"></div>`).join('');
+function updateScore() {
+  document.getElementById('q-correct').textContent = qScore;
+  document.getElementById('q-total').textContent = qTotal;
+  document.getElementById('q-streak').textContent = qStreak;
+  document.getElementById('streak-dots').innerHTML = qHistory.slice(-20).map(h =>
+    `<div class="streak-dot ${h ? 'hit' : 'miss'}"></div>`).join('');
 }
 </script>
 </body>
