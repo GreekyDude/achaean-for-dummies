@@ -10,116 +10,151 @@
 <main class="page">
   <div class="page-hero">
     <div class="section-title">Practice</div>
-    <h1>Decode Challenge</h1>
-    <p class="subtitle">A real Linear B word from the tablets appears. Click the syllables in the correct order.</p>
+    <h1 id="pg-title">Decode Challenge</h1>
+    <p class="subtitle" id="pg-sub">A real Linear B word from the tablets appears. Click the syllables in the correct order.</p>
   </div>
-  <div class="panel" style="margin-bottom:1.25rem">
-    <p>Click syllable tiles in order to fill the slots. Click a filled slot to undo it. Each correct decode reveals which tablet the word comes from and what it means.</p>
-  </div>
+  <div class="panel" style="margin-bottom:1.25rem" id="pg-intro"></div>
   <div class="decode-word-display" id="dc-word"></div>
   <div class="decode-slots" id="dc-slots"></div>
   <div class="decode-choices" id="dc-choices"></div>
   <div class="decode-feedback" id="dc-feedback"></div>
   <div class="btn-row">
-    <button class="btn btn-primary" onclick="dcNext()" id="dc-next-btn">Next Word →</button>
-    <button class="btn" onclick="dcClear()" id="dc-clear-btn">Clear</button>
+    <button class="btn btn-primary" onclick="dcNext()" id="dc-next-btn"></button>
+    <button class="btn" onclick="dcClear()" id="dc-clear-btn"></button>
   </div>
-  <div style="font-size:.8rem;color:var(--ink-faint);margin:.5rem 0" id="dc-score">Score: 0 / 0</div>
+  <div style="font-size:.8rem;color:var(--ink-faint);margin:.5rem 0" id="dc-score"></div>
   <div class="decode-reveal" id="dc-reveal"><div id="dc-reveal-content"></div></div>
 </main>
 <footer><span class="signs">𐀷𐀙𐀏 𐀯𐀵 𐀏𐀏 𐀴𐀪𐀡</span>Linear B Mycenaean Script Reference</footer>
 <script src="../js/data.js"></script>
 <script src="../js/nav.js"></script>
 <script>
-let dcWords=shuffle([...DECODE_WORDS]),dcIdx=0,dcScore=0,dcTotal=0;
-let dcCurrent=null,dcAnswer=[],dcLocked=false;
+const STRINGS = {
+  en:{title:'Decode Challenge',sub:'A real Linear B word from the tablets appears. Click the syllables in the correct order.',
+    intro:'Click syllable tiles in order to fill the slots. Click a filled slot to undo. Each correct decode reveals the tablet source and meaning.',
+    tablet:'Tablet',correct:'✓ Correct!',wrong:'✗ The answer was: '},
+  fr:{title:'Défi de Déchiffrement',sub:'Un vrai mot en Linéaire B apparaît. Cliquez les syllabes dans le bon ordre.',
+    intro:'Cliquez les tuiles de syllabes dans l\'ordre pour remplir les emplacements. Cliquez sur un emplacement rempli pour annuler.',
+    tablet:'Tablette',correct:'✓ Correct !',wrong:'✗ La réponse était : '},
+  gr:{title:'Αποκρυπτογράφηση',sub:'Εμφανίζεται πραγματική λέξη Γραμμικής Β. Κάντε κλικ στις συλλαβές με τη σωστή σειρά.',
+    intro:'Κάντε κλικ στις συλλαβές για να συμπληρώσετε τις θέσεις. Κάντε κλικ σε μια συμπληρωμένη θέση για αναίρεση.',
+    tablet:'Πινακίδα',correct:'✓ Σωστό!',wrong:'✗ Η απάντηση ήταν: '},
+};
 
-document.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('dc-next-btn').textContent=t('next');
-  document.getElementById('dc-clear-btn').textContent=t('clear');
+const S = STRINGS[LANG] || STRINGS.en;
+let dcWords = shuffle([...DECODE_WORDS]), dcIdx = 0, dcScore = 0, dcTotal = 0;
+let dcCurrent = null, dcAnswer = [], dcLocked = false;
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('pg-title').textContent = S.title;
+  document.getElementById('pg-sub').textContent = S.sub;
+  document.getElementById('pg-intro').innerHTML = `<p>${S.intro}</p>`;
+  document.getElementById('dc-next-btn').textContent = t('next');
+  document.getElementById('dc-clear-btn').textContent = t('clear');
+  updateScore();
   dcLoad();
 });
 
-function dcLoad(){
-  if(dcIdx>=dcWords.length){dcWords=shuffle([...DECODE_WORDS]);dcIdx=0;}
-  dcCurrent=dcWords[dcIdx++]; dcAnswer=[]; dcLocked=false;
-  document.getElementById('dc-feedback').textContent='';
+function dcLoad() {
+  if (dcIdx >= dcWords.length) { dcWords = shuffle([...DECODE_WORDS]); dcIdx = 0; }
+  dcCurrent = dcWords[dcIdx++]; dcAnswer = []; dcLocked = false;
+  document.getElementById('dc-feedback').textContent = '';
   document.getElementById('dc-reveal').classList.remove('show');
-  document.getElementById('dc-word').textContent=word(dcCurrent.sylls);
-  const sd=document.getElementById('dc-slots'); sd.innerHTML='';
-  dcCurrent.sylls.forEach((_,i)=>{
-    const d=document.createElement('div');
-    d.className='decode-slot'; d.id=`slot-${i}`; d.textContent='_';
-    d.addEventListener('click',()=>dcRemove(i));
+  document.getElementById('dc-word').textContent = word(dcCurrent.sylls);
+
+  const sd = document.getElementById('dc-slots'); sd.innerHTML = '';
+  dcCurrent.sylls.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'decode-slot'; d.id = `slot-${i}`; d.textContent = '_';
+    d.addEventListener('click', () => dcRemove(i));
     sd.appendChild(d);
   });
-  const allS=Object.keys(SIGNS);
-  const dist=shuffle(allS.filter(k=>!dcCurrent.sylls.includes(k))).slice(0,5);
-  const choices=shuffle([...dcCurrent.sylls,...dist]);
-  const cd=document.getElementById('dc-choices'); cd.innerHTML='';
-  choices.forEach(c=>{
-    const b=document.createElement('div');
-    b.className='decode-choice'; b.id=`choice-${c}`; b.textContent=c;
-    b.addEventListener('click',()=>dcPick(c,b));
+
+  const allS = Object.keys(SIGNS);
+  const dist = shuffle(allS.filter(k => !dcCurrent.sylls.includes(k))).slice(0, 5);
+  const choices = shuffle([...dcCurrent.sylls, ...dist]);
+  const cd = document.getElementById('dc-choices'); cd.innerHTML = '';
+  choices.forEach(c => {
+    const b = document.createElement('div');
+    b.className = 'decode-choice'; b.id = `choice-${c}`; b.textContent = c;
+    b.addEventListener('click', () => dcPick(c, b));
     cd.appendChild(b);
   });
 }
 
-function dcPick(val,btn){
-  if(dcLocked)return;
-  const next=dcAnswer.length;
-  if(next>=dcCurrent.sylls.length)return;
+function dcPick(val, btn) {
+  if (dcLocked) return;
+  const next = dcAnswer.length;
+  if (next >= dcCurrent.sylls.length) return;
   dcAnswer.push(val); btn.classList.add('used');
-  const sl=document.getElementById(`slot-${next}`);
-  sl.textContent=val; sl.classList.add('filled');
-  if(dcAnswer.length===dcCurrent.sylls.length)dcCheck();
+  const sl = document.getElementById(`slot-${next}`);
+  sl.textContent = val; sl.classList.add('filled');
+  if (dcAnswer.length === dcCurrent.sylls.length) dcCheck();
 }
 
-function dcRemove(i){
-  if(dcLocked||i>=dcAnswer.length)return;
-  const removed=dcAnswer[i]; dcAnswer=dcAnswer.slice(0,i);
-  for(let j=i;j<dcCurrent.sylls.length;j++){const sl=document.getElementById(`slot-${j}`);sl.textContent='_';sl.className='decode-slot';}
-  const btn=document.getElementById(`choice-${removed}`);
-  if(btn)btn.classList.remove('used');
+function dcRemove(i) {
+  if (dcLocked || i >= dcAnswer.length) return;
+  const removed = dcAnswer[i]; dcAnswer = dcAnswer.slice(0, i);
+  for (let j = i; j < dcCurrent.sylls.length; j++) {
+    const sl = document.getElementById(`slot-${j}`);
+    sl.textContent = '_'; sl.className = 'decode-slot';
+  }
+  const btn = document.getElementById(`choice-${removed}`);
+  if (btn) btn.classList.remove('used');
 }
 
-function dcCheck(){
-  dcLocked=true; dcTotal++;
-  let correct=true;
-  dcAnswer.forEach((v,i)=>{
-    const sl=document.getElementById(`slot-${i}`);
+function dcCheck() {
+  dcLocked = true; dcTotal++;
+  let correct = true;
+  dcAnswer.forEach((v, i) => {
+    const sl = document.getElementById(`slot-${i}`);
     sl.classList.remove('filled');
-    sl.classList.add(v===dcCurrent.sylls[i]?'correct':'wrong');
-    if(v!==dcCurrent.sylls[i])correct=false;
+    if (v === dcCurrent.sylls[i]) sl.classList.add('correct');
+    else { sl.classList.add('wrong'); correct = false; }
   });
-  document.getElementById('dc-feedback').textContent=correct?'✓ Correct!':`✗ The answer was: ${dcCurrent.translit}`;
-  if(correct)dcScore++;
-  document.getElementById('dc-score').textContent=`${t('score')}: ${dcScore} / ${dcTotal}`;
-  const chips=dcCurrent.sylls.map(s=>`<div class="syl-chip-detail"><span class="cs">${SIGNS[s]||'?'}</span><span class="cv">${s}</span></div>`).join('');
-  document.getElementById('dc-reveal-content').innerHTML=`
+  document.getElementById('dc-feedback').textContent = correct
+    ? S.correct
+    : S.wrong + dcCurrent.translit;
+  if (correct) dcScore++;
+  updateScore();
+
+  const chips = dcCurrent.sylls.map(s =>
+    `<div class="syl-chip-detail"><span class="cs">${SIGNS[s] || '?'}</span><span class="cv">${s}</span></div>`
+  ).join('');
+  document.getElementById('dc-reveal-content').innerHTML = `
     <div style="display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap;margin-bottom:.75rem">
       <span style="font-size:3rem;line-height:1">${word(dcCurrent.sylls)}</span>
       <div>
         <div style="font-size:1rem;font-weight:600;color:var(--stone-100)">${dcCurrent.translit}</div>
-        <div style="font-size:.9rem;color:var(--ink-dim)">${dcCurrent.meaning}</div>
+        <div style="font-size:.9rem;color:var(--ink-dim)">${tF(dcCurrent.meaning)}</div>
         <div style="font-size:.8rem;color:var(--ink-faint);font-style:italic">${dcCurrent.classical}</div>
       </div>
     </div>
     <div class="breakdown-row" style="margin-bottom:.75rem">${chips}</div>
-    <div style="font-size:.82rem;color:var(--ink-faint);line-height:1.7"><strong style="color:var(--clay-light)">Tablet:</strong> ${dcCurrent.tablet}<br>${dcCurrent.note}</div>`;
+    <div style="font-size:.82rem;color:var(--ink-faint);line-height:1.7">
+      <strong style="color:var(--clay-light)">${S.tablet}:</strong> ${dcCurrent.tablet}<br>
+      ${tF(dcCurrent.note)}
+    </div>`;
   document.getElementById('dc-reveal').classList.add('show');
 }
 
-function dcClear(){
-  if(!dcCurrent)return;
-  dcAnswer=[]; dcLocked=false;
-  document.getElementById('dc-feedback').textContent='';
-  document.getElementById('dc-reveal').classList.remove('show');
-  for(let i=0;i<dcCurrent.sylls.length;i++){const sl=document.getElementById(`slot-${i}`);if(sl){sl.textContent='_';sl.className='decode-slot';}}
-  document.querySelectorAll('.decode-choice').forEach(b=>b.classList.remove('used'));
+function updateScore() {
+  document.getElementById('dc-score').textContent = `${t('score')}: ${dcScore} / ${dcTotal}`;
 }
 
-function dcNext(){dcLoad();}
+function dcClear() {
+  if (!dcCurrent) return;
+  dcAnswer = []; dcLocked = false;
+  document.getElementById('dc-feedback').textContent = '';
+  document.getElementById('dc-reveal').classList.remove('show');
+  for (let i = 0; i < dcCurrent.sylls.length; i++) {
+    const sl = document.getElementById(`slot-${i}`);
+    if (sl) { sl.textContent = '_'; sl.className = 'decode-slot'; }
+  }
+  document.querySelectorAll('.decode-choice').forEach(b => b.classList.remove('used'));
+}
+
+function dcNext() { dcLoad(); }
 </script>
 </body>
 </html>
