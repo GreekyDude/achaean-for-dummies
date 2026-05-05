@@ -10,41 +10,64 @@
 <main class="page">
   <div class="page-hero">
     <div class="section-title">Reference</div>
-    <h1>The Number System</h1>
-    <p class="subtitle">Linear B uses a decimal additive system. Stack signs to build any number.</p>
+    <h1 id="pg-title">The Number System</h1>
+    <p class="subtitle" id="pg-sub">Linear B uses a decimal additive system. Stack signs to build any number.</p>
   </div>
-  <div class="panel">
-    <p>Numbers use <strong>Aegean numerals</strong> (Unicode U+10100+). The system is strictly additive: 𐄇=1, 𐄙=10, 𐄢=100, 𐄫=1000. Numbers always follow the commodity ideogram they quantify on the tablet.</p>
-  </div>
-  <div class="section-title mt3">All Number Signs</div>
+  <div class="panel" id="pg-intro"></div>
+  <div class="section-title mt3" id="all-signs-label">All Number Signs</div>
   <div class="num-grid" id="num-grid"></div>
-  <div class="section-title mt3">Number Calculator</div>
+  <div class="section-title mt3" id="calc-label">Number Calculator</div>
   <div class="num-calc">
-    <label style="display:block;font-family:var(--font-display);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:.5rem">Enter a number (1–9999)</label>
+    <label style="display:block;font-family:var(--font-display);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:.5rem" id="calc-hint"></label>
     <input class="num-input" type="number" id="num-in" min="1" max="9999" placeholder="42" oninput="calcNum(this.value)">
     <div class="num-result" id="num-out"></div>
     <div class="num-breakdown" id="num-break"></div>
   </div>
-  <div class="panel mt3">
-    <h3>How numbers appear on tablets</h3>
-    <p>A typical line: <span style="font-size:1.2rem">𐀷𐀙𐀏</span> <span style="font-size:1.2rem">𐄫𐄢𐄙𐄇</span> = <em>wa-na-ka</em> [1111 units of grain]. The ideogram between the label and the number tells you what is being counted even without reading the words.</p>
-  </div>
+  <div class="panel mt3" id="how-panel"></div>
 </main>
 <footer><span class="signs">𐀷𐀙𐀏 𐀯𐀵 𐀏𐀏 𐀴𐀪𐀡</span>Linear B Mycenaean Script Reference</footer>
 <script src="../js/data.js"></script>
 <script src="../js/nav.js"></script>
 <script>
-document.getElementById('num-grid').innerHTML=NUM_SIGNS.map(n=>`<div class="num-card"><span class="ns">${n.sign}</span><span class="nv">${n.val.toLocaleString()}</span></div>`).join('');
-function calcNum(v){
-  const n=parseInt(v);
-  if(isNaN(n)||n<1||n>9999){document.getElementById('num-out').textContent='';document.getElementById('num-break').textContent='';return;}
-  let out='',parts=[],rem=n;
-  [[1000,'𐄫'],[100,'𐄢'],[10,'𐄙'],[1,'𐄇']].forEach(([val,sign])=>{
-    const c=Math.floor(rem/val);rem%=val;
-    if(c){out+=sign.repeat(c);parts.push(`${c} × ${val}`);}
+const STRINGS = {
+  en:{title:'The Number System',sub:'Linear B uses a decimal additive system. Stack signs to build any number.',
+    intro:'Numbers use <strong>Aegean numerals</strong> (Unicode U+10100+). The system is additive: 𐄇=1, 𐄙=10, 𐄢=100, 𐄫=1000. Numbers always follow the commodity ideogram on the tablet.',
+    allSigns:'All Number Signs',calc:'Number Calculator',hint:'Enter a number (1–9999)',
+    how:'<h3>How numbers appear on tablets</h3><p>A typical line: <span style="font-size:1.2rem">𐀷𐀙𐀏</span> <span style="font-size:1.2rem">𐄫𐄢𐄙𐄇</span> = <em>wa-na-ka</em> [1111 units]. The ideogram between the label and number tells you what is counted.</p>'},
+  fr:{title:'Le Système Numérique',sub:'Le Linéaire B utilise un système décimal additif. Empilez les signes pour construire n\'importe quel nombre.',
+    intro:'Les nombres utilisent les <strong>chiffres égéens</strong> (Unicode U+10100+). Le système est additif : 𐄇=1, 𐄙=10, 𐄢=100, 𐄫=1000.',
+    allSigns:'Tous les signes numériques',calc:'Calculateur numérique',hint:'Entrez un nombre (1–9999)',
+    how:'<h3>Comment les nombres apparaissent sur les tablettes</h3><p>Une ligne typique : <span style="font-size:1.2rem">𐀷𐀙𐀏</span> <span style="font-size:1.2rem">𐄫𐄢𐄙𐄇</span> = <em>wa-na-ka</em> [1111 unités].</p>'},
+  gr:{title:'Το Αριθμητικό Σύστημα',sub:'Η Γραμμική Β χρησιμοποιεί προσθετικό δεκαδικό σύστημα.',
+    intro:'Οι αριθμοί χρησιμοποιούν <strong>Αιγαιακά ψηφία</strong> (Unicode U+10100+). Το σύστημα είναι προσθετικό: 𐄇=1, 𐄙=10, 𐄢=100, 𐄫=1000.',
+    allSigns:'Όλα τα αριθμητικά σημεία',calc:'Αριθμομηχανή',hint:'Εισάγετε αριθμό (1–9999)',
+    how:'<h3>Πώς εμφανίζονται οι αριθμοί στις πινακίδες</h3><p>Τυπική γραμμή: <span style="font-size:1.2rem">𐀷𐀙𐀏</span> <span style="font-size:1.2rem">𐄫𐄢𐄙𐄇</span> = <em>wa-na-ka</em> [1111 μονάδες].</p>'},
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  const s = STRINGS[LANG] || STRINGS.en;
+  document.getElementById('pg-title').textContent = s.title;
+  document.getElementById('pg-sub').textContent = s.sub;
+  document.getElementById('pg-intro').innerHTML = `<p>${s.intro}</p>`;
+  document.getElementById('all-signs-label').textContent = s.allSigns;
+  document.getElementById('calc-label').textContent = s.calc;
+  document.getElementById('calc-hint').textContent = s.hint;
+  document.getElementById('how-panel').innerHTML = s.how;
+  document.getElementById('num-grid').innerHTML = NUM_SIGNS.map(n =>
+    `<div class="num-card"><span class="ns">${n.sign}</span><span class="nv">${n.val.toLocaleString()}</span></div>`
+  ).join('');
+});
+
+function calcNum(v) {
+  const n = parseInt(v);
+  if (isNaN(n) || n < 1 || n > 9999) { document.getElementById('num-out').textContent = ''; document.getElementById('num-break').textContent = ''; return; }
+  let out = '', parts = [], rem = n;
+  [[1000,'𐄫'],[100,'𐄢'],[10,'𐄙'],[1,'𐄇']].forEach(([val, sign]) => {
+    const c = Math.floor(rem / val); rem %= val;
+    if (c) { out += sign.repeat(c); parts.push(`${c} × ${val}`); }
   });
-  document.getElementById('num-out').textContent=out;
-  document.getElementById('num-break').textContent=parts.join(' + ')+' = '+n;
+  document.getElementById('num-out').textContent = out;
+  document.getElementById('num-break').textContent = parts.join(' + ') + ' = ' + n;
 }
 </script>
 </body>
