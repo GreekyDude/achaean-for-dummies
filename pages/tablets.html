@@ -22,81 +22,96 @@
 <nav class="nav"></nav>
 <main class="page">
   <div class="page-hero">
-    <div class="section-title">Primary Sources</div>
+    <div class="section-title" id="pg-eyebrow">Primary Sources</div>
     <h1 id="pg-title">Real Tablets</h1>
-    <p class="subtitle">7 tablets from Pylos and Knossos · line-by-line transliteration and translation · verified scholarship</p>
+    <p class="subtitle" id="pg-sub">7 tablets from Pylos and Knossos · line-by-line transliteration and translation</p>
   </div>
-
-  <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem">
-    <button class="chip active" onclick="filterDiff('All',this)">All</button>
-    <button class="chip" onclick="filterDiff('Beginner',this)">Beginner</button>
-    <button class="chip" onclick="filterDiff('Intermediate',this)">Intermediate</button>
-    <button class="chip" onclick="filterDiff('Advanced',this)">Advanced</button>
-  </div>
-
+  <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem" id="diff-bar"></div>
   <div class="tablet-grid" id="tablet-thumbs"></div>
   <div class="tablet-panel" id="tablet-panel"></div>
-
-  <div class="panel mt3">
-    <h3>How to read a Linear B tablet</h3>
-    <p>Each line typically contains: a <strong>label or name</strong> (person, place, or title), a <strong>commodity ideogram</strong> (pictographic sign telling you what is counted), and a <strong>number</strong>. Difficulty ratings reflect how much scholarly context is needed to interpret the text.</p>
-  </div>
+  <div class="panel mt3" id="how-panel"></div>
 </main>
 <footer><span class="signs">𐀷𐀙𐀏 𐀯𐀵 𐀏𐀏 𐀴𐀪𐀡</span>Linear B Mycenaean Script Reference</footer>
 <script src="../js/data.js"></script>
 <script src="../js/nav.js"></script>
 <script>
-const ORDER=['ta641','cn608','fn7','tn316','jn829','kn_fp1','py_an1'];
-let activeDiff='All', activeKey=null;
+const DIFF_LABELS = {
+  en:{All:'All',Beginner:'Beginner',Intermediate:'Intermediate',Advanced:'Advanced',
+    how:'<h3>How to read a Linear B tablet</h3><p>Each line typically contains: a <strong>label or name</strong> (person, place, or title), a <strong>commodity ideogram</strong> telling you what is counted, and a <strong>number</strong>. Difficulty ratings reflect how much scholarly context is needed.</p>'},
+  fr:{All:'Tous',Beginner:'Débutant',Intermediate:'Intermédiaire',Advanced:'Avancé',
+    how:'<h3>Comment lire une tablette en Linéaire B</h3><p>Chaque ligne contient généralement : un <strong>label ou nom</strong>, un <strong>idéogramme de marchandise</strong> indiquant ce qui est compté, et un <strong>nombre</strong>.</p>'},
+  gr:{All:'Όλα',Beginner:'Αρχάριος',Intermediate:'Ενδιάμεσο',Advanced:'Προχωρημένο',
+    how:'<h3>Πώς να διαβάσετε μια πινακίδα Γραμμικής Β</h3><p>Κάθε γραμμή περιέχει συνήθως: μια <strong>ετικέτα ή όνομα</strong>, ένα <strong>ιδεόγραμμα εμπορεύματος</strong> που δηλώνει τι μετριέται, και έναν <strong>αριθμό</strong>.</p>'},
+};
 
-function buildThumbs(){
-  const cont=document.getElementById('tablet-thumbs');
-  cont.innerHTML='';
-  ORDER.forEach(key=>{
-    const T=TABLETS[key];
-    if(activeDiff!=='All'&&T.difficulty!==activeDiff)return;
-    const d=document.createElement('div');
-    d.className='tablet-thumb'+(activeKey===key?' active':'');
-    d.innerHTML=`<div class="tt-ref">${T.ref}</div><div class="tt-name">${T.name}</div><div class="tt-date">${T.date.split('·')[0].trim()} <span class="diff-badge diff-${T.difficulty}">${T.difficulty}</span></div>`;
-    d.addEventListener('click',()=>showTablet(key));
+const ORDER = ['ta641','cn608','fn7','tn316','jn829','kn_fp1','py_an1'];
+let activeDiff = 'All', activeKey = null;
+const dl = DIFF_LABELS[LANG] || DIFF_LABELS.en;
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('how-panel').innerHTML = dl.how;
+
+  // Difficulty filter
+  const bar = document.getElementById('diff-bar');
+  ['All','Beginner','Intermediate','Advanced'].forEach(d => {
+    const b = document.createElement('button');
+    b.className = 'chip' + (d === 'All' ? ' active' : '');
+    b.textContent = dl[d];
+    b.addEventListener('click', () => {
+      activeDiff = d; activeKey = null;
+      document.querySelectorAll('#diff-bar .chip').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      buildThumbs();
+      document.getElementById('tablet-panel').innerHTML = '';
+    });
+    bar.appendChild(b);
+  });
+
+  buildThumbs();
+  showTablet('ta641');
+});
+
+function buildThumbs() {
+  const cont = document.getElementById('tablet-thumbs');
+  cont.innerHTML = '';
+  ORDER.forEach(key => {
+    const T = TABLETS[key];
+    if (activeDiff !== 'All' && T.difficulty !== activeDiff) return;
+    const d = document.createElement('div');
+    d.className = 'tablet-thumb' + (activeKey === key ? ' active' : '');
+    d.innerHTML = `<div class="tt-ref">${T.ref}</div>
+      <div class="tt-name">${tF(T.name)}</div>
+      <div class="tt-date">${T.date.split('·')[0].trim()}
+        <span class="diff-badge diff-${T.difficulty}">${dl[T.difficulty]||T.difficulty}</span>
+      </div>`;
+    d.addEventListener('click', () => showTablet(key));
     cont.appendChild(d);
   });
 }
 
-function showTablet(key){
-  activeKey=key;
+function showTablet(key) {
+  activeKey = key;
   buildThumbs();
-  const T=TABLETS[key];
-  const lines=T.lines.map(l=>`
+  const T = TABLETS[key];
+  const lines = T.lines.map(l => `
     <div class="tablet-line">
       <span class="t-num">${l.n}</span>
       <div>
         <div class="t-signs">${l.signs}</div>
-        <div class="t-translit">${l.translit}${l.ideogram?`<span class="t-ideogram">${l.ideogram}`:''}</span></div>
+        <div class="t-translit">${l.translit}${l.ideogram ? `<span class="t-ideogram">${l.ideogram}</span>` : ''}</div>
       </div>
-      <div class="t-meaning">${l.meaning}</div>
+      <div class="t-meaning">${tF(l.meaning)}</div>
     </div>`).join('');
-  document.getElementById('tablet-panel').innerHTML=`
-    <div class="tablet-meta">${T.date} <span class="diff-badge diff-${T.difficulty}">${T.difficulty}</span></div>
-    <div class="tablet-title">${T.ref} — ${T.name}</div>
-    <div class="tablet-desc">${T.desc}</div>
+  document.getElementById('tablet-panel').innerHTML = `
+    <div class="tablet-meta">${T.date} <span class="diff-badge diff-${T.difficulty}">${dl[T.difficulty]||T.difficulty}</span></div>
+    <div class="tablet-title">${T.ref} — ${tF(T.name)}</div>
+    <div class="tablet-desc">${tF(T.desc)}</div>
     <div style="display:grid;grid-template-columns:36px 1fr 1fr;gap:0 16px;padding-bottom:6px;border-bottom:1px solid var(--stone-700);margin-bottom:4px">
       <span style="font-size:.6rem;color:var(--ink-faint);font-family:var(--font-mono)">line</span>
       <span style="font-size:.6rem;color:var(--ink-faint);font-family:var(--font-mono)">signs + transliteration</span>
       <span style="font-size:.6rem;color:var(--ink-faint);font-family:var(--font-mono)">meaning</span>
     </div>${lines}`;
 }
-
-function filterDiff(d,btn){
-  activeDiff=d; activeKey=null;
-  document.querySelectorAll('.chip').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  buildThumbs();
-  document.getElementById('tablet-panel').innerHTML='';
-}
-
-buildThumbs();
-showTablet('ta641');
 </script>
 </body>
 </html>
